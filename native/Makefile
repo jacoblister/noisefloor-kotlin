@@ -15,13 +15,13 @@ LINKFLAGS=-Wl,--start-group                                                     
 %.o: %.cc
 	$(CPP) -c -O2 -o $@ $< $(CFLAGS)
 
-all: hello-world jack-client jack-client-blocking alsa-client
+all: noisefloor
 
 hello-world: hello-world.o
 	$(LINK) hello-world.o -o hello-world $(LINKFLAGS)
 
-jack-client: jack-client.o
-	$(LINK) jack-client.o -o jack-client $(LINKFLAGS)
+noisefloor: noisefloor.o
+	$(LINK) noisefloor.o -o noisefloor $(LINKFLAGS)
 
 clean:
-	rm -f *.o hello-world jack-client alsa-client
+	rm -f *.o noisefloor
