@@ -35,13 +35,13 @@ fun process(samples: Array<Float>): Array<Float> {
 //private fun jsonToMap(json: Json): Map<String, String> {
 
 fun main(args : Array<String>) {
-    val params = oscillator.getParameters()
-    params[1].value = params[1].enum!![2]
-    println(params[1].value)
+//    val params = oscillator.getParameters()
+//    params[1].value = params[1].enum!![2]
+//    println(params[1].value)
 
-    val event = JSON.parse<MIDIEvent>("""
-        {"data":["abc",4,2]}
-        """)
-    println(event.data[0])
-    println(JSON.stringify(gain))
+//    val event = JSON.parse<MIDIEvent>("""
+//        {"data":["abc",4,2]}
+//        """)
+//    println(event.data[0])
+//    println(JSON.stringify(gain))
 }

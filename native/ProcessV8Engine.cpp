@@ -1,40 +1,12 @@
-// Copyright 2015 the V8 project authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+#include "ProcessV8Engine.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <jack/jack.h>
-
-#include "include/libplatform/libplatform.h"
-#include "include/v8.h"
-
-class V8Process {
-  private:
-    v8::Isolate::CreateParams create_params;
-    v8::Isolate* isolate;
-    v8::Eternal<v8::Context> context;
-    v8::Eternal<v8::Function> process_function;
-
-    int samples_per_frame;
-  public:
-    V8Process() {}
-    void init(int sampling_rate, int samples_per_frame);
-    void compile(std::string filename);
-    void compile_source(std::string filename);
-    float *process(float *samples);
-    void shutdown(void);
-};
-
-void V8Process::compile(std::string source) {
+void ProcessV8Engine::compile(std::string source) {
     v8::Local<v8::String> source_func = v8::String::NewFromUtf8(isolate, source.c_str(), v8::NewStringType::kNormal).ToLocalChecked();
     v8::Local<v8::Script> script_func = v8::Script::Compile(this->context.Get(this->isolate), source_func).ToLocalChecked();
     script_func->Run(this->context.Get(this->isolate)).ToLocalChecked();
 }
 
-void V8Process::compile_source(std::string filename) {
+void ProcessV8Engine::compile_source(std::string filename) {
     std::ifstream t(filename.c_str());
     std::string source((std::istreambuf_iterator<char>(t)),
                     std::istreambuf_iterator<char>());
@@ -68,7 +40,11 @@ void ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args) {
   fflush(stdout);
 }
 
-void V8Process::init(int sampling_rate, int samples_per_frame) {
+void ProcessV8Engine::init(void) {
+    printf("v8 init\n");
+}
+
+void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->samples_per_frame = samples_per_frame;
 
     v8::V8::InitializeICUDefaultLocation("");
@@ -108,6 +84,7 @@ void V8Process::init(int sampling_rate, int samples_per_frame) {
     this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/noisefloor.js");
     this->compile("function start(sampleRate) { noisefloor.start(sampleRate); }");
     this->compile("function process(samples) { return noisefloor.process(samples); }");
+    this->compile("function query(endpoint, request) { return \"response\" }");
 
 //    this->compile_source("./gain.js");
 //    this->compile("function process(samples) { return samples; }");
@@ -122,12 +99,10 @@ void V8Process::init(int sampling_rate, int samples_per_frame) {
     this->process_function = v8::Eternal<v8::Function>(this->isolate, process_function);
 }
 
-float *V8Process::process(float *samples) {
+float *ProcessV8Engine::process(float *samples) {
     // Run the script to get the result.
     v8::HandleScope handle_scope(this->isolate);
-
     v8::Local<v8::Context> local_context = this->context.Get(this->isolate);
-
     v8::Context::Scope context_scope(local_context);
 
     v8::Local<v8::ArrayBuffer> arrayBuffer = v8::ArrayBuffer::New(this->isolate, samples, this->samples_per_frame * sizeof(float));
@@ -137,10 +112,16 @@ float *V8Process::process(float *samples) {
     args[0] = float32Array;
     this->process_function.Get(this->isolate)->Call(local_context->Global(), 1, args);
 
+    // Handle pending API query
+    if (this->query_flag) {
+        this->query_response = this->query_endpoint + ":" + this->query_request;
+        this->query_flag = false;
+    }
+
     return samples;
 }
 
-void V8Process::shutdown(void) {
+void ProcessV8Engine::stop(void) {
     // Dispose the isolate and tear down V8.
     this->isolate->Dispose();
     v8::V8::Dispose();
@@ -148,68 +129,16 @@ void V8Process::shutdown(void) {
     delete this->create_params.array_buffer_allocator;
 }
 
-V8Process v8process;
-
-jack_client_t *jack_client;
-jack_port_t *jack_input_port;
-jack_port_t *jack_output_port;
-
 #include <unistd.h>
 
-int process_jack(jack_nframes_t nframes, void *arg) {
-    static bool is_init = 0;
+std::string ProcessV8Engine::query(std::string endpoint, std::string request) {
+    this->query_endpoint = endpoint;
+    this->query_request  = request;
+    this->query_flag     = true;
 
-    if (!is_init) {
-        printf("init jack thread\n");
-        v8process.init(jack_get_sample_rate(jack_client), nframes);
-        is_init = 1;
+    while (this->query_flag) {
+        usleep(1000);
     }
 
-	jack_default_audio_sample_t *in, *out;
-
-	in = (jack_default_audio_sample_t *)jack_port_get_buffer(jack_input_port, nframes);
-	out = (jack_default_audio_sample_t *)jack_port_get_buffer(jack_output_port, nframes);
-
-    v8process.process(in);
-
-	memcpy(out, in, sizeof (jack_default_audio_sample_t) * nframes);
-
-	return 0;
-}
-
-void run_jack(V8Process &v8process) {
-	const char **ports;
-	const char *client_name = "v8process";
-	const char *server_name = NULL;
-	jack_options_t options = JackNullOption;
-	jack_status_t status;
-
-	/* open a client connection to the JACK server */
-    jack_client = jack_client_open(client_name, options, &status, server_name);
-
-	jack_input_port = jack_port_register (jack_client, "input",
-		                     			  JACK_DEFAULT_AUDIO_TYPE,
-					                      JackPortIsInput, 0);
-	jack_output_port = jack_port_register (jack_client, "output",
-					                       JACK_DEFAULT_AUDIO_TYPE,
-					                       JackPortIsOutput, 0);
-    jack_set_process_callback(jack_client, process_jack, 0);
-	jack_activate(jack_client);
-
-    while(1) {
-        usleep(1000000);
-    }
-}
-
-int main(int argc, char* argv[]) {
-    // Initialize V8.
-//    float samples[] = {1,2,3,4};
-//    v8process.init(4);
-//    v8process.process(samples);
-//    printf("%f\n", samples[0]);
-
-  run_jack(v8process);
-  v8process.shutdown();
-
-  return 0;
+    return this->query_response;
 }

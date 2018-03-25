@@ -1,4 +1,4 @@
 .idea
 out
-native/noisefloor
+native/NoiseFloor
 native/*.o

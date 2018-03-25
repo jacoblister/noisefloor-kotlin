@@ -12,16 +12,20 @@ LINKFLAGS=-Wl,--start-group                                                     
     $(V8_DIR)/out.gn/x64.release/obj/third_party/icu/libicui18n.a               \
 -Wl,--end-group -lrt -ldl -pthread -std=c++0x -lc++ -ljack
 
-%.o: %.cc
+%.o: %.cpp
 	$(CPP) -c -O2 -o $@ $< $(CFLAGS)
 
-all: noisefloor
+all: NoiseFloor
 
-hello-world: hello-world.o
-	$(LINK) hello-world.o -o hello-world $(LINKFLAGS)
+NoiseFloor.o: NoiseFloor.cpp
+ProcessV8Engine.o: ProcessV8Engine.cpp ProcessV8Engine.hpp
+DriverJack.o: DriverJack.cpp DriverJack.hpp
+ApiRESTServer.o: ApiRESTServer.cpp ApiRESTServer.hpp
 
-noisefloor: noisefloor.o
-	$(LINK) noisefloor.o -o noisefloor $(LINKFLAGS)
+ALLOBJECTS = NoiseFloor.o ProcessV8Engine.o DriverJack.o ApiRESTServer.o
+
+NoiseFloor: $(ALLOBJECTS)
+	$(LINK) $(ALLOBJECTS) -o NoiseFloor $(LINKFLAGS)
 
 clean:
-	rm -f *.o noisefloor
+	rm -f *.o NoiseFloor
