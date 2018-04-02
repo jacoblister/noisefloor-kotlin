@@ -1,3 +1,6 @@
+//import kotlin.js.Math.pow
+import kotlin.math.pow
+
 //val processorFactory = ProcessorFactory()
 //val gain = processorFactory.build(Gain::class)
 //val oscillator = processorFactory.build(Oscillator::class)
@@ -19,6 +22,7 @@ fun start(sampleRate: Int) {
     oscillator.start(sampleRate)
     lfo.start(sampleRate)
 
+//    oscillator.waveform.value = Oscillator.Waveform.Square
     oscillator2.waveform.value = Oscillator.Waveform.Saw
     oscillator2.start(sampleRate)
 }
@@ -26,10 +30,23 @@ fun start(sampleRate: Int) {
 typealias AudioSamples = Array<Float>
 
 @JsName(name = "process")
-fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>) {
-    for (i in 0 until samplesIn[0].size) {
-        samplesIn[0][i] = oscillator.process()
-        samplesIn[1][i] = samplesOut[1][i]
+fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, MIDIIn: Array<MIDIEvent>, MIDIOut: Array<MIDIEvent>) {
+    for (i in 0 until MIDIIn.size) {
+
+        val freq = 440.0f * 2.0f.pow((MIDIIn[i].data[1] - 57).toFloat() / 12)
+        val level = MIDIIn[i].data[2].toFloat() / 127.0f
+
+        oscillator.freq.value = freq
+        gain.master.value     = level
+
+        println("got typed frame: ${MIDIIn[i].time}:${MIDIIn[i].data}  freq=$freq level=$level")
+    }
+
+    for (i in 0 until samplesOut[0].size) {
+        val osc = gain.process(oscillator.process(), 1f)
+
+        samplesOut[0][i] = osc
+        samplesOut[1][i] = osc
     }
 
 //    lfo.freq = 5f

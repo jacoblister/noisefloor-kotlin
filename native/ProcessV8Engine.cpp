@@ -85,7 +85,7 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/lib/kotlin.js");
     this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/noisefloor.js");
     this->compile("function start(sampleRate) { noisefloor.start(sampleRate); }");
-    this->compile("function process(samplesIn, samplesOut) { return noisefloor.process(samplesIn, samplesOut); }");
+    this->compile("function process(samplesIn, samplesOut, midiIn, midiOut) { return noisefloor.process(samplesIn, samplesOut, midiIn, midiOut); }");
     this->compile("function query(endpoint, request) { return noisefloor.query(endpoint, request); }");
 
 //    this->compile_source("./gain.js");
@@ -105,7 +105,7 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->query_function = v8::Eternal<v8::Function>(this->isolate, query_function);
 }
 
-void ProcessV8Engine::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut) {
+void ProcessV8Engine::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) {
     // Run the script to get the result.
     v8::HandleScope handle_scope(this->isolate);
     v8::Local<v8::Context> local_context = this->context.Get(this->isolate);
@@ -125,11 +125,20 @@ void ProcessV8Engine::process(std::vector<float *> samplesIn, std::vector<float 
         jsSamplesOut->Set(i, float32Array);
     }
 
-    v8::Handle<v8::Value> args[2];
-    args[0] = jsSamplesIn;
-    args[1] = jsSamplesOut;
+    v8::Local<v8::Array> jsMidiIn = v8::Array::New(this->isolate, 0);
+    for (int i = 0; i < midiIn.size(); i++) {
+        struct MIDIEvent& midiEvent = midiIn.at(i);
+        v8::Local<v8::Object> jsMidiEvent = v8::Object::New(this->isolate);
+        v8::Local<v8::ArrayBuffer> arrayBuffer = v8::ArrayBuffer::New(this->isolate, midiEvent.data, midiEvent.length * sizeof(char));
+        v8::Local<v8::Uint8Array>  uint8Array  = v8::Uint8Array::New(arrayBuffer, 0, midiEvent.length);
+        jsMidiEvent->CreateDataProperty(local_context, v8::String::NewFromUtf8(this->isolate, "time"), v8::Number::New(this->isolate, (double)midiEvent.time));
+        jsMidiEvent->CreateDataProperty(local_context, v8::String::NewFromUtf8(this->isolate, "data"), uint8Array);
 
-    this->process_function.Get(this->isolate)->Call(local_context->Global(), 2, args);
+        jsMidiIn->Set(i, jsMidiEvent);
+    }
+
+    v8::Local<v8::Value> args[] = {jsSamplesIn, jsSamplesOut, jsMidiIn, jsMidiIn};
+    this->process_function.Get(this->isolate)->Call(local_context->Global(), 4, args);
 
     // Handle pending API query
     if (this->query_flag) {

@@ -1,6 +1,6 @@
 class Gain : Processor(
-        name ="gain",
-        inputs = arrayOf("input", "gain"),
+        name    = "gain",
+        inputs  = arrayOf("input", "gain"),
         outputs = arrayOf("output")) {
     val master = ProcessorParameter(value=1f, min=0f, max=1f)
 
