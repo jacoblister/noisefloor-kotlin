@@ -2,17 +2,19 @@
 
 #include "ProcessV8Engine.hpp"
 #include "DriverJack.hpp"
-#include "ApiRESTServer.hpp"
+#include "DriverMock.hpp"
+#include "ClientRESTServer.hpp"
 
 class NoiseFloor {
   public:
-    NoiseFloor(bool nothing) : process(), driver(process), api(process) {}
+    NoiseFloor(bool nothing) : process(), driver(process), client(process) {}
 
     void run(void);
   private:
-    ProcessV8Engine process;
-    DriverJack      driver;
-    ApiRESTServer   api;
+    ProcessV8Engine  process;
+    DriverJack       driver;
+//    DriverMock       driver;
+    ClientRESTServer client;
 };
 
 void NoiseFloor::run(void) {
@@ -21,7 +23,7 @@ void NoiseFloor::run(void) {
     driver.init();
     driver.start();
 
-    api.run();
+    client.run();
 }
 
 int main(int argc, char* argv[]) {

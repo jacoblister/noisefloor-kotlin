@@ -1,8 +1,8 @@
 #include "Process.hpp"
 
-class ApiRESTServer {
+class ClientRESTServer {
   public:
-    ApiRESTServer(Process &process) : process(process) { }
+    ClientRESTServer(Process &process) : process(process) { }
     void init();
     void run();
   private:

@@ -18,14 +18,19 @@ LINKFLAGS=-Wl,--start-group                                                     
 all: NoiseFloor
 
 NoiseFloor.o: NoiseFloor.cpp
+
 ProcessV8Engine.o: ProcessV8Engine.cpp ProcessV8Engine.hpp
+
+DriverMock.o: DriverMock.cpp DriverMock.hpp
 DriverJack.o: DriverJack.cpp DriverJack.hpp
-ApiRESTServer.o: ApiRESTServer.cpp ApiRESTServer.hpp
 
-ALLOBJECTS = NoiseFloor.o ProcessV8Engine.o DriverJack.o ApiRESTServer.o
+ClientRESTServer.o: ClientRESTServer.cpp ClientRESTServer.hpp
 
-NoiseFloor: $(ALLOBJECTS)
-	$(LINK) $(ALLOBJECTS) -o NoiseFloor $(LINKFLAGS)
+DRIVERS = DriverJack.o DriverMock.o
+ALL = NoiseFloor.o ProcessV8Engine.o $(DRIVERS) ClientRESTServer.o
+
+NoiseFloor: $(ALL)
+	$(LINK) $(ALL) -o NoiseFloor $(LINKFLAGS)
 
 clean:
 	rm -f *.o NoiseFloor

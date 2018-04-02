@@ -32,9 +32,16 @@ fun process(samples: Array<Float>): Array<Float> {
     return samples
 }
 
+@JsName(name = "query")
+fun query(endpoint: String, query: String): String {
+    return "NoiseFloor says $endpoint : $query"
+}
+
 //private fun jsonToMap(json: Json): Map<String, String> {
 
 fun main(args : Array<String>) {
+    val event = MIDIEvent(data = arrayOf(1,2,3))
+
 //    val params = oscillator.getParameters()
 //    params[1].value = params[1].enum!![2]
 //    println(params[1].value)

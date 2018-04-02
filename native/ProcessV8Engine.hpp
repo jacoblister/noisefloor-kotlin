@@ -5,6 +5,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 
 class ProcessV8Engine : public Process {
   public:
@@ -21,13 +22,14 @@ class ProcessV8Engine : public Process {
     int samples_per_frame;
     v8::Isolate::CreateParams create_params;
     v8::Isolate* isolate;
-    v8::Eternal<v8::Context> context;
+    v8::Eternal<v8::Context>  context;
     v8::Eternal<v8::Function> process_function;
+    v8::Eternal<v8::Function> query_function;
 
-    // todo - do a lot better
-    std::atomic<bool> query_flag;
-    std::mutex        query_mutex;
-    std::string       query_endpoint;
-    std::string       query_request;
-    std::string       query_response;
+    std::atomic<bool>       query_flag;
+    std::mutex              query_mutex;
+    std::condition_variable query_cv;
+    std::string             query_endpoint;
+    std::string             query_request;
+    std::string             query_response;
 };

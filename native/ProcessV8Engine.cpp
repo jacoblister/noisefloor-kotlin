@@ -84,19 +84,23 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/noisefloor.js");
     this->compile("function start(sampleRate) { noisefloor.start(sampleRate); }");
     this->compile("function process(samples) { return noisefloor.process(samples); }");
-    this->compile("function query(endpoint, request) { return \"response\" }");
+    this->compile("function query(endpoint, request) { return noisefloor.query(endpoint, request); }");
 
 //    this->compile_source("./gain.js");
 //    this->compile("function process(samples) { return samples; }");
 
-    v8::Local<v8::Value> start_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "start"));
+    v8::Local<v8::Value>    start_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "start"));
     v8::Local<v8::Function> start_function = v8::Local<v8::Function>::Cast(start_function_value);
-    v8::Local<v8::Value> args[] = { v8::Number::New(this->isolate, (double)sampling_rate) };
+    v8::Local<v8::Value>    args[] = { v8::Number::New(this->isolate, (double)sampling_rate) };
     start_function->Call(local_context->Global(), 1, args);
 
-    v8::Local<v8::Value> process_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "process"));
+    v8::Local<v8::Value>    process_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "process"));
     v8::Local<v8::Function> process_function = v8::Local<v8::Function>::Cast(process_function_value);
     this->process_function = v8::Eternal<v8::Function>(this->isolate, process_function);
+
+    v8::Local<v8::Value>    query_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "query"));
+    v8::Local<v8::Function> query_function = v8::Local<v8::Function>::Cast(query_function_value);
+    this->query_function = v8::Eternal<v8::Function>(this->isolate, query_function);
 }
 
 float *ProcessV8Engine::process(float *samples) {
@@ -105,7 +109,7 @@ float *ProcessV8Engine::process(float *samples) {
     v8::Local<v8::Context> local_context = this->context.Get(this->isolate);
     v8::Context::Scope context_scope(local_context);
 
-    v8::Local<v8::ArrayBuffer> arrayBuffer = v8::ArrayBuffer::New(this->isolate, samples, this->samples_per_frame * sizeof(float));
+    v8::Local<v8::ArrayBuffer>  arrayBuffer  = v8::ArrayBuffer::New(this->isolate, samples, this->samples_per_frame * sizeof(float));
     v8::Local<v8::Float32Array> float32Array = v8::Float32Array::New(arrayBuffer, 0, this->samples_per_frame);
 
     v8::Handle<v8::Value> args[1];
@@ -114,8 +118,29 @@ float *ProcessV8Engine::process(float *samples) {
 
     // Handle pending API query
     if (this->query_flag) {
-        this->query_response = this->query_endpoint + ":" + this->query_request;
+        std::unique_lock<std::mutex> lk(this->query_mutex);
+
+        this->query_response = "";
+
+        v8::Local<v8::Value> query_args[] = {
+            v8::String::NewFromUtf8(this->isolate, this->query_endpoint.c_str()),
+            v8::String::NewFromUtf8(this->isolate, this->query_request.c_str())
+        };
+
+        v8::Handle<v8::Value> js_result = this->query_function.Get(this->isolate)->Call(local_context->Global(), 2, query_args);
+        if (js_result->IsString()) {
+            //todo - This should be simply - v8::String::Utf8Value result(js_result) - crashes with SEGV;
+            v8::Handle<v8::String> v8String = v8::Handle<v8::String>::Cast(js_result);
+
+            char buffer[2048];
+            v8String->WriteUtf8(buffer, v8String->Utf8Length());
+            std::string response(buffer, buffer + v8String->Utf8Length());
+            this->query_response = response;
+        }
         this->query_flag = false;
+
+        lk.unlock();
+        this->query_cv.notify_one();
     }
 
     return samples;
@@ -129,16 +154,13 @@ void ProcessV8Engine::stop(void) {
     delete this->create_params.array_buffer_allocator;
 }
 
-#include <unistd.h>
-
 std::string ProcessV8Engine::query(std::string endpoint, std::string request) {
     this->query_endpoint = endpoint;
     this->query_request  = request;
     this->query_flag     = true;
 
-    while (this->query_flag) {
-        usleep(1000);
-    }
+    std::unique_lock<std::mutex> lk(this->query_mutex);
+    this->query_cv.wait(lk);
 
     return this->query_response;
 }

@@ -1,1 +1,1 @@
-data class MIDIEvent(val data: Array<Int>)
+data class MIDIEvent(val time: Long = 0, val data: Array<Byte>)
