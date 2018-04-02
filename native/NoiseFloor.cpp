@@ -4,6 +4,7 @@
 #include "DriverJack.hpp"
 #include "DriverMock.hpp"
 #include "ClientRESTServer.hpp"
+#include "ClientMock.hpp"
 
 class NoiseFloor {
   public:
@@ -14,7 +15,8 @@ class NoiseFloor {
     ProcessV8Engine  process;
     DriverJack       driver;
 //    DriverMock       driver;
-    ClientRESTServer client;
+    ClientMock client;
+//    ClientRESTServer client;
 };
 
 void NoiseFloor::run(void) {

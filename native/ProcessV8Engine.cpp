@@ -103,17 +103,24 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->query_function = v8::Eternal<v8::Function>(this->isolate, query_function);
 }
 
-float *ProcessV8Engine::process(float *samples) {
+void ProcessV8Engine::process(float *samples0, float *samples1) {
     // Run the script to get the result.
     v8::HandleScope handle_scope(this->isolate);
     v8::Local<v8::Context> local_context = this->context.Get(this->isolate);
     v8::Context::Scope context_scope(local_context);
 
-    v8::Local<v8::ArrayBuffer>  arrayBuffer  = v8::ArrayBuffer::New(this->isolate, samples, this->samples_per_frame * sizeof(float));
-    v8::Local<v8::Float32Array> float32Array = v8::Float32Array::New(arrayBuffer, 0, this->samples_per_frame);
+    v8::Local<v8::ArrayBuffer>  arrayBuffer0  = v8::ArrayBuffer::New(this->isolate, samples0, this->samples_per_frame * sizeof(float));
+    v8::Local<v8::Float32Array> float32Array0 = v8::Float32Array::New(arrayBuffer0, 0, this->samples_per_frame);
+
+    v8::Local<v8::ArrayBuffer>  arrayBuffer1  = v8::ArrayBuffer::New(this->isolate, samples1, this->samples_per_frame * sizeof(float));
+    v8::Local<v8::Float32Array> float32Array1 = v8::Float32Array::New(arrayBuffer1, 0, this->samples_per_frame);
+
+    v8::Local<v8::Array> samplesIn = v8::Array::New(this->isolate, 2);
+    samplesIn->Set(0, float32Array0);
+    samplesIn->Set(1, float32Array1);
 
     v8::Handle<v8::Value> args[1];
-    args[0] = float32Array;
+    args[0] = samplesIn;
     this->process_function.Get(this->isolate)->Call(local_context->Global(), 1, args);
 
     // Handle pending API query
@@ -142,8 +149,6 @@ float *ProcessV8Engine::process(float *samples) {
         lk.unlock();
         this->query_cv.notify_one();
     }
-
-    return samples;
 }
 
 void ProcessV8Engine::stop(void) {

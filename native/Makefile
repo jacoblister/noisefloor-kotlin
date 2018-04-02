@@ -24,10 +24,12 @@ ProcessV8Engine.o: ProcessV8Engine.cpp ProcessV8Engine.hpp
 DriverMock.o: DriverMock.cpp DriverMock.hpp
 DriverJack.o: DriverJack.cpp DriverJack.hpp
 
+ClientMock.o: ClientMock.cpp ClientMock.hpp
 ClientRESTServer.o: ClientRESTServer.cpp ClientRESTServer.hpp
 
 DRIVERS = DriverJack.o DriverMock.o
-ALL = NoiseFloor.o ProcessV8Engine.o $(DRIVERS) ClientRESTServer.o
+CLIENTS = ClientMock.o ClientRESTServer.o
+ALL = NoiseFloor.o ProcessV8Engine.o $(DRIVERS) $(CLIENTS)
 
 NoiseFloor: $(ALL)
 	$(LINK) $(ALL) -o NoiseFloor $(LINKFLAGS)

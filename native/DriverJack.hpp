@@ -8,14 +8,14 @@ class DriverJack {
     void init();
     void start();
 
-    inline Process&       getProcess(void)        { return process; }
-    inline jack_client_t* getJackClient(void)     { return jack_client; }
-    inline jack_port_t*   getJackInputPort(void)  { return jack_input_port; }
-    inline jack_port_t*   getJackOutputPort(void) { return jack_output_port; }
+    inline Process&       getProcess(void)         { return process; }
+    inline jack_client_t* getJackClient(void)      { return jack_client; }
+    inline jack_port_t*   getJackInputPort(int i)  { return jack_input_port[i]; }
+    inline jack_port_t*   getJackOutputPort(int i) { return jack_output_port[i]; }
   private:
     Process& process;
 
     jack_client_t* jack_client;
-    jack_port_t* jack_input_port;
-    jack_port_t* jack_output_port;
+    jack_port_t* jack_input_port[2];
+    jack_port_t* jack_output_port[2];
 };

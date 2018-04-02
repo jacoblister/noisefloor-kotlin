@@ -5,6 +5,9 @@
 @JsName(name = "oscillator")
 val oscillator = Oscillator()
 
+val oscillator2 = Oscillator()
+
+
 @JsName(name = "gain")
 val gain = Gain()
 
@@ -15,13 +18,21 @@ fun start(sampleRate: Int) {
     println("starting with sampling rate $sampleRate")
     oscillator.start(sampleRate)
     lfo.start(sampleRate)
+
+    oscillator2.waveform.value = Oscillator.Waveform.Saw
+    oscillator2.start(sampleRate)
 }
 
+typealias AudioSamples = Array<Float>
+
 @JsName(name = "process")
-fun process(samples: Array<Float>): Array<Float> {
+fun process(samplesIn: Array<AudioSamples>): Array<Float> {
+    val samples = samplesIn[0]
+
     for (i in 0 until samples.size) {
-        samples[i] = oscillator.process()
-        samples[i] = gain.process(samples[i], 1f)
+        samplesIn[0][i] = oscillator.process()
+        samplesIn[0][i] = gain.process(samples[i], 1f)
+        samplesIn[1][i] = oscillator2.process()
     }
 
 //    lfo.freq = 5f

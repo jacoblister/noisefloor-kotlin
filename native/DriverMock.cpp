@@ -16,7 +16,7 @@ void process_thread(DriverMock *driver) {
     float buffer[SAMPLES_PER_FRAME];
 
     while (true) {
-        driver->getProcess().process(buffer);
+        driver->getProcess().process(buffer, buffer);
 
         usleep(1000000);
     }
