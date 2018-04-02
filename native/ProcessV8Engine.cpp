@@ -1,5 +1,7 @@
 #include "ProcessV8Engine.hpp"
 
+#include <iostream>
+
 void ProcessV8Engine::compile(std::string source) {
     v8::Local<v8::String> source_func = v8::String::NewFromUtf8(isolate, source.c_str(), v8::NewStringType::kNormal).ToLocalChecked();
     v8::Local<v8::Script> script_func = v8::Script::Compile(this->context.Get(this->isolate), source_func).ToLocalChecked();
@@ -83,7 +85,7 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/lib/kotlin.js");
     this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/noisefloor.js");
     this->compile("function start(sampleRate) { noisefloor.start(sampleRate); }");
-    this->compile("function process(samples) { return noisefloor.process(samples); }");
+    this->compile("function process(samplesIn, samplesOut) { return noisefloor.process(samplesIn, samplesOut); }");
     this->compile("function query(endpoint, request) { return noisefloor.query(endpoint, request); }");
 
 //    this->compile_source("./gain.js");
@@ -103,25 +105,31 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->query_function = v8::Eternal<v8::Function>(this->isolate, query_function);
 }
 
-void ProcessV8Engine::process(float *samples0, float *samples1) {
+void ProcessV8Engine::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut) {
     // Run the script to get the result.
     v8::HandleScope handle_scope(this->isolate);
     v8::Local<v8::Context> local_context = this->context.Get(this->isolate);
     v8::Context::Scope context_scope(local_context);
 
-    v8::Local<v8::ArrayBuffer>  arrayBuffer0  = v8::ArrayBuffer::New(this->isolate, samples0, this->samples_per_frame * sizeof(float));
-    v8::Local<v8::Float32Array> float32Array0 = v8::Float32Array::New(arrayBuffer0, 0, this->samples_per_frame);
+    v8::Local<v8::Array> jsSamplesIn = v8::Array::New(this->isolate, samplesIn.size());
+    for (int i = 0; i < samplesIn.size(); i++) {
+        v8::Local<v8::ArrayBuffer>  arrayBuffer  = v8::ArrayBuffer::New(this->isolate, samplesIn.at(i), this->samples_per_frame * sizeof(float));
+        v8::Local<v8::Float32Array> float32Array = v8::Float32Array::New(arrayBuffer, 0, this->samples_per_frame);
+        jsSamplesIn->Set(i, float32Array);
+    }
 
-    v8::Local<v8::ArrayBuffer>  arrayBuffer1  = v8::ArrayBuffer::New(this->isolate, samples1, this->samples_per_frame * sizeof(float));
-    v8::Local<v8::Float32Array> float32Array1 = v8::Float32Array::New(arrayBuffer1, 0, this->samples_per_frame);
+    v8::Local<v8::Array> jsSamplesOut = v8::Array::New(this->isolate, samplesOut.size());
+    for (int i = 0; i < samplesOut.size(); i++) {
+        v8::Local<v8::ArrayBuffer>  arrayBuffer  = v8::ArrayBuffer::New(this->isolate, samplesOut.at(i), this->samples_per_frame * sizeof(float));
+        v8::Local<v8::Float32Array> float32Array = v8::Float32Array::New(arrayBuffer, 0, this->samples_per_frame);
+        jsSamplesOut->Set(i, float32Array);
+    }
 
-    v8::Local<v8::Array> samplesIn = v8::Array::New(this->isolate, 2);
-    samplesIn->Set(0, float32Array0);
-    samplesIn->Set(1, float32Array1);
+    v8::Handle<v8::Value> args[2];
+    args[0] = jsSamplesIn;
+    args[1] = jsSamplesOut;
 
-    v8::Handle<v8::Value> args[1];
-    args[0] = samplesIn;
-    this->process_function.Get(this->isolate)->Call(local_context->Global(), 1, args);
+    this->process_function.Get(this->isolate)->Call(local_context->Global(), 2, args);
 
     // Handle pending API query
     if (this->query_flag) {

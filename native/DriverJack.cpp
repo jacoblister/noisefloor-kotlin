@@ -1,5 +1,6 @@
 #include "DriverJack.hpp"
 
+#include <iostream>
 #include <string.h>
 
 int process_jack(jack_nframes_t nframes, void *arg) {
@@ -7,7 +8,7 @@ int process_jack(jack_nframes_t nframes, void *arg) {
 
     static bool is_init = 0;
     if (!is_init) {
-        printf("init jack thread\n");
+        std::cout << "init jack thread: nframes=" << nframes << std::endl;
         driver->getProcess().init();
         driver->getProcess().start(jack_get_sample_rate(driver->getJackClient()), nframes);
         is_init = 1;
@@ -20,10 +21,9 @@ int process_jack(jack_nframes_t nframes, void *arg) {
 	out0 = (jack_default_audio_sample_t *)jack_port_get_buffer(driver->getJackOutputPort(0), nframes);
 	out1 = (jack_default_audio_sample_t *)jack_port_get_buffer(driver->getJackOutputPort(1), nframes);
 
-    driver->getProcess().process(in0, in1);
-
-	memcpy(out0, in0, sizeof (jack_default_audio_sample_t) *nframes);
-	memcpy(out1, in1, sizeof (jack_default_audio_sample_t) *nframes);
+    std::vector<float *> samplesIn =  { in0, in1 };
+    std::vector<float *> samplesOut = { out0, out1 };
+    driver->getProcess().process(samplesIn, samplesOut);
 
 	return 0;
 }

@@ -15,8 +15,10 @@ void process_thread(DriverMock *driver) {
 
     float buffer[SAMPLES_PER_FRAME];
 
+    std::vector<float *> samplesIn = { buffer };
+
     while (true) {
-        driver->getProcess().process(buffer, buffer);
+        driver->getProcess().process(samplesIn, samplesIn);
 
         usleep(1000000);
     }

@@ -26,21 +26,16 @@ fun start(sampleRate: Int) {
 typealias AudioSamples = Array<Float>
 
 @JsName(name = "process")
-fun process(samplesIn: Array<AudioSamples>): Array<Float> {
-    val samples = samplesIn[0]
-
-    for (i in 0 until samples.size) {
+fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>) {
+    for (i in 0 until samplesIn[0].size) {
         samplesIn[0][i] = oscillator.process()
-        samplesIn[0][i] = gain.process(samples[i], 1f)
-        samplesIn[1][i] = oscillator2.process()
+        samplesIn[1][i] = samplesOut[1][i]
     }
 
 //    lfo.freq = 5f
 //    for (i in 0 until samples.size) {
 //        samples[i] *= lfo.process() * 5
 //    }
-
-    return samples
 }
 
 @JsName(name = "query")
