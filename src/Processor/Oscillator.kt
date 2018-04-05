@@ -30,7 +30,7 @@ class Oscillator : Processor(
         val result = waveTable[waveform.value.ordinal][currentSample.toInt()]
 
         currentSample += freq.value
-        currentSample %= sampleRate
+        if (currentSample >= sampleRate) { currentSample -= sampleRate }
 
         return result
     }
