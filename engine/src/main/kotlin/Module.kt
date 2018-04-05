@@ -1,3 +1,5 @@
+package org.noisefloor.engine
+
 abstract class Module {
     var name: String = ""
 

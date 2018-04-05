@@ -1,0 +1,25 @@
+buildscript {
+    ext.kotlin_version = '1.2.31'
+
+    repositories {
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin2js'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js"
+    testCompile "org.jetbrains.kotlin:kotlin-test-js"
+}
+
+//[compileKotlin2Js, compileTestKotlin2Js]*.configure {
+//    kotlinOptions.moduleKind = "commonjs"
+//}

@@ -6,8 +6,8 @@
 </head>
 <body>
 
-<script type="text/javascript" src="out/production/noisefloor/lib/kotlin.js"></script>
-<script type="text/javascript" src="out/production/noisefloor/noisefloor.js"></script>
+<script type="text/javascript" src="engine/out/production/classes/lib/kotlin.js"></script>
+<script type="text/javascript" src="engine/build/classes/main/engine.js"></script>
 
 <!--
 <script type="text/javascript">
@@ -32,12 +32,15 @@
         ];
     var audioContext = new AudioContext();
 
-    noisefloor.start(audioContext.sampleRate)
+    var noiseengine = engine.org.noisefloor.engine
+    noiseengine.start(audioContext.sampleRate)
+
+    <!--noiseengine.start(audioContext.sampleRate)-->
 
     var node = audioContext.createScriptProcessor(frameLength, 2, 2);
     node.onaudioprocess = function (e) {
         var output = e.outputBuffer.getChannelData(0);
-        noisefloor.process(sampleBuffer, sampleBuffer, [], []);
+        noiseengine.process(sampleBuffer, sampleBuffer, [], []);
         e.outputBuffer.copyToChannel(sampleBuffer[0], 0);
         e.outputBuffer.copyToChannel(sampleBuffer[1], 1);
     }
@@ -47,20 +50,20 @@
 
 <div class="waveformcontainer">
     Waveform
-    <input type="button" value="Sine"    onclick="noisefloor.oscillator.waveform.value = noisefloor.oscillator.waveform.enum[0]"/>
-    <input type="button" value="Saw"     onclick="noisefloor.oscillator.waveform.value = noisefloor.oscillator.waveform.enum[1]"/>
-    <input type="button" value="Square"  onclick="noisefloor.oscillator.waveform.value = noisefloor.oscillator.waveform.enum[2]"/>
-    <input type="button" value="Triange" onclick="noisefloor.oscillator.waveform.value = noisefloor.oscillator.waveform.enum[3]"/>
+    <input type="button" value="Sine"    onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[0]"/>
+    <input type="button" value="Saw"     onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[1]"/>
+    <input type="button" value="Square"  onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[2]"/>
+    <input type="button" value="Triange" onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[3]"/>
 </div>
 
 <div class="slidecontainer">
     Frequency
-    <input type="range" min="200" max="1000" value="440" class="slider" id="frequency" oninput="noisefloor.oscillator.freq.value = parseFloat(this.value)">
+    <input type="range" min="200" max="1000" value="440" class="slider" id="frequency" oninput="noiseengine.getOscillator.freq.value = parseFloat(this.value)">
 </div>
 
 <div class="gaincontainer">
-    Gain
-    <input type="range" min="0" max="1" step="0.01" value="1" class="slider" id="level" oninput="noisefloor.gain.master.value = parseFloat(this.value)">
+    Processor.Gain
+    <input type="range" min="0" max="1" step="0.01" value="1" class="slider" id="level" oninput="noiseengine.getGain.master.value = parseFloat(this.value)">
 </div>
 
 </body>

@@ -1,14 +1,14 @@
-import kotlin.math.pow
+package org.noisefloor.engine
 
 //val processorFactory = ProcessorFactory()
-//val gain = processorFactory.build(Gain::class)
-//val oscillator = processorFactory.build(Oscillator::class)
+//val getGain = processorFactory.build(Processor.Gain::class)
+//val getOscillator = processorFactory.build(Processor.Oscillator::class)
 
-@JsName(name = "oscillator")
+@JsName(name = "getOscillator")
 val oscillator = Oscillator()
 val oscillator2 = Oscillator()
 
-@JsName(name = "gain")
+@JsName(name = "getGain")
 val gain = Gain()
 val lfo = Oscillator()
 
@@ -20,7 +20,7 @@ fun start(sampleRate: Int) {
     oscillator.start(sampleRate)
     lfo.start(sampleRate)
 
-//    oscillator.waveform.value = Oscillator.Waveform.Square
+//    getOscillator.waveform.value = Processor.Oscillator.Waveform.Square
     oscillator2.waveform.value = Oscillator.Waveform.Saw
     oscillator2.start(sampleRate)
 
@@ -36,8 +36,8 @@ fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, mid
 //        val freq = 440.0f * 2.0f.pow((midiIn[i].data[1] - 57).toFloat() / 12)
 //        val level = midiIn[i].data[2].toFloat() / 127.0f
 //
-//        oscillator.freq.value = freq
-//        gain.master.value     = level
+//        getOscillator.freq.value = freq
+//        getGain.master.value     = level
 //
 //        println("got typed frame: ${midiIn[i].time}:${midiIn[i].data}  freq=$freq level=$level")
 //    }
@@ -46,16 +46,16 @@ fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, mid
         samplesOut[0][i] = oscillator.process()
         samplesOut[1][i] = oscillator2.process()
 
-//        val osc = gain.process(oscillator.process(), 1f)
-//        val osc2 = gain.process(oscillator2.process(), 1f)
+//        val osc = getGain.process(getOscillator.process(), 1f)
+//        val osc2 = getGain.process(getOscillator2.process(), 1f)
 //
 //        samplesOut[0][i] = osc
 //        samplesOut[1][i] = osc2
     }
 
-//    lfo.freq = 5f
+//    getLfo.freq = 5f
 //    for (i in 0 until samples.size) {
-//        samples[i] *= lfo.process() * 5
+//        samples[i] *= getLfo.process() * 5
 //    }
 }
 
@@ -67,15 +67,15 @@ fun query(endpoint: String, query: String): String {
 //private fun jsonToMap(json: Json): Map<String, String> {
 
 fun main(args : Array<String>) {
-    val event = MIDIEvent(data = arrayOf(1,2,3))
+    val event = MIDIEvent(data = arrayOf(1, 2, 3))
 
-//    val params = oscillator.getParameters()
+//    val params = getOscillator.getParameters()
 //    params[1].value = params[1].enum!![2]
 //    println(params[1].value)
 
-//    val event = JSON.parse<MIDIEvent>("""
+//    val event = JSON.parse<Common.MIDIEvent>("""
 //        {"data":["abc",4,2]}
 //        """)
 //    println(event.data[0])
-//    println(JSON.stringify(gain))
+//    println(JSON.stringify(getGain))
 }

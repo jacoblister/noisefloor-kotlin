@@ -1,11 +1,13 @@
+package org.noisefloor.engine
+
 import kotlin.reflect.KClass
 
 class ProcessorFactory {
     fun build(processorClass: KClass<*>): Processor {
         val processor = when(processorClass) {
-            Gain::class -> Envelope()
+            Envelope::class -> Envelope()
             Gain::class -> Gain()
-            Gain::class -> Oscillator()
+            Oscillator::class -> Oscillator()
             else -> { throw IllegalArgumentException("Invalid processor class") }
         }
 

@@ -1,3 +1,5 @@
+package org.noisefloor.engine
+
 abstract class Processor(var name: String = "processor", val inputs: Array<String> = emptyArray(), val outputs: Array<String> = emptyArray()) {
     open fun start(sampleRate: Int) {}
     open fun stop() {}

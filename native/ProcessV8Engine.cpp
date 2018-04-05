@@ -82,11 +82,16 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     // Set console log function
     this->compile("console.log = function (message) { console_log(message) };");
 
-    this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/lib/kotlin.js");
-    this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/noisefloor.js");
-    this->compile("function start(sampleRate) { noisefloor.start(sampleRate); }");
-    this->compile("function process(samplesIn, samplesOut, midiIn, midiOut) { return noisefloor.process(samplesIn, samplesOut, midiIn, midiOut); }");
-    this->compile("function query(endpoint, request) { return noisefloor.query(endpoint, request); }");
+//    this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/lib/kotlin.js");
+//    this->compile_source("/home/jacob/projects/noisefloor/out/production/noisefloor/noisefloor.js");
+//    this->compile("function start(sampleRate) { noisefloor.start(sampleRate); }");
+//    this->compile("function process(samplesIn, samplesOut, midiIn, midiOut) { return noisefloor.process(samplesIn, samplesOut, midiIn, midiOut); }");
+//    this->compile("function query(endpoint, request) { return noisefloor.query(endpoint, request); }");
+    this->compile_source("/home/jacob/projects/noisefloor/engine/out/production/classes/lib/kotlin.js");
+    this->compile_source("/home/jacob/projects/noisefloor/engine/out/production/classes/engine.js");
+    this->compile("function start(sampleRate) { engine.org.noisefloor.engine.start(sampleRate); }");
+    this->compile("function process(samplesIn, samplesOut, midiIn, midiOut) { return engine.org.noisefloor.engine.process(samplesIn, samplesOut, midiIn, midiOut); }");
+    this->compile("function query(endpoint, request) { return engine.org.noisefloor.engine.query(endpoint, request); }");
 
 //    this->compile_source("./gain.js");
 //    this->compile("function process(samples) { return samples; }");

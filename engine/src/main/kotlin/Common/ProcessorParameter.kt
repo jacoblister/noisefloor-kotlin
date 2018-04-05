@@ -1,3 +1,5 @@
+package org.noisefloor.engine
+
 class ProcessorParameter<T>(
         var name:  String? = null,
         var value: T,
