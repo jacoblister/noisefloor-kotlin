@@ -67,7 +67,7 @@ class MIDIInput : Processor(
                 }
             }
 
-            println(channelNotes)
+            println(channelHertz)
         }
 
 

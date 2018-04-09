@@ -4,7 +4,7 @@ abstract class Processor(var name: String = "processor", val inputs: Array<Strin
     open fun start(sampleRate: Int) {}
     open fun stop() {}
 
-    open fun process(input: Array<Float>): Array<Float> { return input }
+//    open fun process(input: Array<Float>): Array<Float> { return input }
 
     open fun getInputs():  Array<String> { return emptyArray() }
     open fun getOutputs(): Array<String> { return emptyArray() }

@@ -12,7 +12,7 @@ class Keyboard {
     private var noteEvents: Array<MIDIEvent> = emptyArray()
     private val noteMap: HashMap<Int, Element> = hashMapOf()
 
-    fun noteEvents(): Array<MIDIEvent> {
+    fun getNoteEvents(): Array<MIDIEvent> {
         val result = noteEvents
         noteEvents = emptyArray()
         return result

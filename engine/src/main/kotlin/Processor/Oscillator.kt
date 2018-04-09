@@ -7,7 +7,7 @@ class Oscillator : Processor(
         name    = "getOscillator",
         outputs = arrayOf("output")) {
     val freq     = ProcessorParameter(value = 440f, min = 10f, max = 20000f)
-    val waveform = ProcessorParameter(value = Waveform.Triangle, enum = Waveform.values())
+    val waveform = ProcessorParameter(value = Waveform.Sine, enum = Waveform.values())
 
     enum class Waveform { Sine, Saw, Square, Triangle }
 

@@ -14,6 +14,9 @@ val lfo = Oscillator()
 
 val midiInput = MIDIInput()
 
+@JsName(name = "getPatch")
+val multiPatch = MultiPatch()
+
 @JsName(name = "start")
 fun start(sampleRate: Int) {
     println("starting with sampling rate $sampleRate")
@@ -24,6 +27,7 @@ fun start(sampleRate: Int) {
     oscillator2.waveform.value = Oscillator.Waveform.Saw
     oscillator2.start(sampleRate)
 
+    multiPatch.start(sampleRate)
     midiInput.start(sampleRate)
 }
 
@@ -31,20 +35,15 @@ typealias AudioSamples = Array<Float>
 
 @JsName(name = "process")
 fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, midiIn: Array<MIDIEvent>, midiOut: Array<MIDIEvent>) {
-    val fequencies = midiInput.process(midiIn)
-//    for (i in 0 until midiIn.size) {
-//        val freq = 440.0f * 2.0f.pow((midiIn[i].data[1] - 57).toFloat() / 12)
-//        val level = midiIn[i].data[2].toFloat() / 127.0f
-//
-//        getOscillator.freq.value = freq
-//        getGain.master.value     = level
-//
-//        println("got typed frame: ${midiIn[i].time}:${midiIn[i].data}  freq=$freq level=$level")
-//    }
+    val freqs = midiInput.process(midiIn)
 
     for (i in 0 until samplesOut[0].size) {
-        samplesOut[0][i] = oscillator.process()
-        samplesOut[1][i] = oscillator2.process()
+        val sample = multiPatch.process(freqs)
+        samplesOut[0][i] = sample
+        samplesOut[1][i] = sample
+
+//        samplesOut[0][i] = oscillator.process()
+//        samplesOut[1][i] = oscillator2.process()
 
 //        val osc = getGain.process(getOscillator.process(), 1f)
 //        val osc2 = getGain.process(getOscillator2.process(), 1f)
