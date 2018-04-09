@@ -4,66 +4,53 @@
     <meta charset="UTF-8">
     <title>Console Output</title>
 </head>
+
+<style>
+    rect { shape-rendering: crispEdges; }
+    .key-white { stroke: black; fill: white; }
+    .key-white.depressed { fill: lightcyan;}
+    .key-black { stroke: black; fill: black; }
+    .key-black.depressed { fill: darkslategray; }
+</style>
 <body>
+
+<svg id="keyboard" width="1000" height="200"></svg>
 
 <script type="text/javascript" src="build/libs/kotlin.js"></script>
 <script type="text/javascript" src="build/libs/engine.js"></script>
-
-<!--
-<script type="text/javascript">
-    var frameLength  = 4096
-    var sampleBuffer = [
-        new Float32Array(Array(frameLength).fill(0)),
-        new Float32Array(Array(frameLength).fill(0))
-        ];
-
-    noisefloor.start(48000)
-    for (var i = 0; i < 100000; i++) {
-        noisefloor.process(sampleBuffer, sampleBuffer, [], []);
-    }
-</script>
--->
+<script type="text/javascript" src="build/libs/noisefloor.js"></script>
 
 <script type="text/javascript">
-    var frameLength  = 4096
+    var noiseweb    = noisefloor.org.noisefloor.web
+    var noiseengine = engine.org.noisefloor.engine
+
+    var frameLength  = 512
     var sampleBuffer = [
         new Float32Array(Array(frameLength).fill(0)),
         new Float32Array(Array(frameLength).fill(0))
         ];
     var audioContext = new AudioContext();
 
-    var noiseengine = engine.org.noisefloor.engine
     noiseengine.start(audioContext.sampleRate)
 
-    <!--noiseengine.start(audioContext.sampleRate)-->
-
     var node = audioContext.createScriptProcessor(frameLength, 2, 2);
-    node.onaudioprocess = function (e) {
-        var output = e.outputBuffer.getChannelData(0);
-        noiseengine.process(sampleBuffer, sampleBuffer, [], []);
-        e.outputBuffer.copyToChannel(sampleBuffer[0], 0);
-        e.outputBuffer.copyToChannel(sampleBuffer[1], 1);
+    node.onaudioprocess = function (event) {
+        var output     = event.outputBuffer.getChannelData(0);
+        var midiEvents = noiseweb.getMIDIEvents()
+
+        noiseengine.process(sampleBuffer, sampleBuffer, midiEvents, []);
+        event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
+        event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
     }
     node.connect(audioContext.destination);
 </script>
 
-
 <div class="waveformcontainer">
     Waveform
-    <input type="button" value="Sine"    onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[0]"/>
-    <input type="button" value="Saw"     onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[1]"/>
-    <input type="button" value="Square"  onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[2]"/>
-    <input type="button" value="Triange" onclick="noiseengine.getOscillator.waveform.value = noiseengine.getOscillator.waveform.enum[3]"/>
-</div>
-
-<div class="slidecontainer">
-    Frequency
-    <input type="range" min="200" max="1000" value="440" class="slider" id="frequency" oninput="noiseengine.getOscillator.freq.value = parseFloat(this.value)">
-</div>
-
-<div class="gaincontainer">
-    Processor.Gain
-    <input type="range" min="0" max="1" step="0.01" value="1" class="slider" id="level" oninput="noiseengine.getGain.master.value = parseFloat(this.value)">
+    <input type="button" value="Sine"    onclick="noiseengine.getPatch.setWaveform(noiseengine.getOscillator.waveform.enum[0])"/>
+    <input type="button" value="Saw"     onclick="noiseengine.getPatch.setWaveform(noiseengine.getOscillator.waveform.enum[1])"/>
+    <input type="button" value="Square"  onclick="noiseengine.getPatch.setWaveform(noiseengine.getOscillator.waveform.enum[2])"/>
+    <input type="button" value="Triange" onclick="noiseengine.getPatch.setWaveform(noiseengine.getOscillator.waveform.enum[3])"/>
 </div>
 
 </body>
