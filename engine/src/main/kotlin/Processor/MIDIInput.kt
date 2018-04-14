@@ -5,28 +5,36 @@ import kotlin.math.pow
 class MIDIInput : Processor(
         name    = "midi-input",
         inputs  = arrayOf("midi"),
-        outputs = arrayOf("freq", "trigger", "level")) {
+        outputs = arrayOf("freq", "gate", "trigger")) {
     val polyphonic = ProcessorParameter(value = 0f, min = 0f, max = 1f)
     val channels   = ProcessorParameter(value = 4f, min = 0f, max = 32f)
 
     private var channelNotes: Array<Int>   = arrayOf()
-    private var channelHertz: Array<Float> = arrayOf()
-    private var channelLevel: Array<Float> = arrayOf()
+    private var channelData: Array<Array<Float>> = arrayOf()
     private var noteChannels: HashMap<Int, Int> = hashMapOf()
     private var nextChannel:  Int = 0
+    private var triggerClear: Int = 0
 
     override fun start(sampleRate: Int) {
         channelNotes = Array(channels.value.toInt()) {0}
-        channelHertz = Array(channels.value.toInt()) {0f}
-        channelLevel = Array(channels.value.toInt()) {0f}
+        channelData  = Array(channels.value.toInt()) {Array(3) { 0f}}
         noteChannels = hashMapOf()
         nextChannel = 0
     }
 
-    fun process(midiIn: Array<MIDIEvent>): Array<Float> {
+    fun processMidi(midiIn: Array<MIDIEvent>) {
         for (i in 0 until midiIn.size) {
             val note     = midiIn[i].data[1].toInt()
             val velocity = midiIn[i].data[2].toInt()
+
+            // note release or new not - free allocated channel
+            val noteChannel = noteChannels[note]
+            if (noteChannel != null) {
+                channelNotes[noteChannel] = 0
+                channelData[noteChannel][1] = 0f
+                channelData[noteChannel][2] = -1f
+                noteChannels.remove(note)
+            }
 
             if (velocity > 0) {
                 // Calculate frequency and level for note
@@ -52,25 +60,26 @@ class MIDIInput : Processor(
 
                 // set channel active
                 channelNotes[targetChannel] = note
-                channelHertz[targetChannel] = frequency
-                channelLevel[targetChannel] = level
+                channelData[targetChannel][0] = frequency
+                channelData[targetChannel][1] = level
+                channelData[targetChannel][2] = level
                 noteChannels[note] = targetChannel
             }
-            else {
-                // note release - free allocated channel
-                val noteChannel = noteChannels[note]
-                if (noteChannel != null) {
-                    channelNotes[noteChannel] = 0
-                    channelHertz[noteChannel] = 0f
-                    channelLevel[noteChannel] = 0f
-                    noteChannels.remove(note)
-                }
-            }
-
-            println(channelHertz)
         }
 
+        triggerClear = 2
+    }
 
-        return channelHertz
+    fun process(): Array<Array<Float>> {
+        if (triggerClear > 0) {
+            triggerClear--
+            if (triggerClear == 0) {
+                // Clear triggers
+                for (i in 0 until channels.value.toInt()) {
+                    channelData[i][2] = 0f
+                }
+            }
+        }
+        return channelData
     }
 }
