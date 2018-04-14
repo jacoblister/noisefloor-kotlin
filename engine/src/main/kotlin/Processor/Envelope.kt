@@ -19,6 +19,12 @@ class Envelope : Processor(
     }
 
     fun process(gate: Float, trigger: Float): Float {
+        if (trigger > 0f) {
+            output = 0f
+            delta = (1000f / attack.value) / sampleRate
+            phase = 1
+        }
+
         when(phase) {
             0 -> {
                 // Inactive
