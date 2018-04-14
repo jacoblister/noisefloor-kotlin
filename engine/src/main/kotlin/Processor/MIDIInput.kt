@@ -38,7 +38,7 @@ class MIDIInput : Processor(
 
             if (velocity > 0) {
                 // Calculate frequency and level for note
-                val frequency = 440.0f * 2.0f.pow((note - 57).toFloat() / 12)
+                val frequency = 220.0f * 2.0f.pow((note - 57).toFloat() / 12)
                 val level = velocity.toFloat() / 127.0f
 
                 // Allocate next free channel
