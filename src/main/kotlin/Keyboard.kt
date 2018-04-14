@@ -87,6 +87,23 @@ class Keyboard {
         note.addEventListener("mousedown",  { noteOn(noteNumber)  } )
         note.addEventListener("mouseup",    { noteOff(noteNumber) } )
         note.addEventListener("mouseout",   { noteOff(noteNumber) } )
+        note.addEventListener("touchstart",
+                fun(event: Event) {
+                    noteOn(noteNumber)
+                    event.preventDefault()
+                }
+        )
+        note.addEventListener("touchend",
+                fun(event: Event) {
+                    noteOff(noteNumber)
+                    event.preventDefault()
+                }
+        )
+        note.addEventListener("touchmove",
+                fun(event: Event) {
+                    event.preventDefault()
+                }
+        )
 
         return note
     }
