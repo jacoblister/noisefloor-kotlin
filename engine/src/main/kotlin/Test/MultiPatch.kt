@@ -20,10 +20,10 @@ class MultiPatch : Processor(
         }
     }
 
-    fun process(freqs: Array<Float>): Float {
+    fun process(freqs: Array<Array<Float>>): Float {
         var result = 0f
         for (i in 0 until channels) {
-            result += patches[i].process(freqs[i])
+            result += patches[i].process(freqs[i][0], freqs[i][1], freqs[i][2])
         }
         return result
     }

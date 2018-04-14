@@ -35,9 +35,10 @@ typealias AudioSamples = Array<Float>
 
 @JsName(name = "process")
 fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, midiIn: Array<MIDIEvent>, midiOut: Array<MIDIEvent>) {
-    val freqs = midiInput.process(midiIn)
+    midiInput.processMidi(midiIn)
 
     for (i in 0 until samplesOut[0].size) {
+        val freqs = midiInput.process()
         val sample = multiPatch.process(freqs)
         samplesOut[0][i] = sample
         samplesOut[1][i] = sample
