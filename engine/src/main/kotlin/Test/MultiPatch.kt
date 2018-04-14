@@ -4,25 +4,27 @@ class MultiPatch : Processor(
         name    = "patch",
         inputs  = arrayOf("freqs"),
         outputs = arrayOf("output")) {
-    private val channels = 4
-    private val patches: Array<Patch> = Array(channels) { Patch() }
+    val channels = ProcessorParameter(value = 4, min = 0f, max = 32f)
+    private var patches: Array<Patch> = arrayOf()
 
     @JsName("setWaveform")
     private fun setWaveform(wave: Oscillator.Waveform) {
-        for (i in 0 until channels) {
+        for (i in 0 until channels.value) {
             patches[i].oscillator.waveform.value = wave
         }
     }
 
     override fun start(sampleRate: Int) {
-        for (i in 0 until channels) {
+        patches = Array(channels.value) { Patch() }
+        for (i in 0 until channels.value) {
             patches[i].start(sampleRate)
         }
+        setWaveform(Oscillator.Waveform.Square)
     }
 
     fun process(freqs: Array<Array<Float>>): Float {
         var result = 0f
-        for (i in 0 until channels) {
+        for (i in 0 until channels.value) {
             result += patches[i].process(freqs[i][0], freqs[i][1], freqs[i][2])
         }
         return result

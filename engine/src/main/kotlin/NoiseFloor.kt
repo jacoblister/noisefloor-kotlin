@@ -27,6 +27,9 @@ fun start(sampleRate: Int) {
     oscillator2.waveform.value = Oscillator.Waveform.Saw
     oscillator2.start(sampleRate)
 
+    val channels = 8
+    midiInput.channels.value  = channels
+    multiPatch.channels.value = channels
     multiPatch.start(sampleRate)
     midiInput.start(sampleRate)
 }

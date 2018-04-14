@@ -7,7 +7,7 @@ class MIDIInput : Processor(
         inputs  = arrayOf("midi"),
         outputs = arrayOf("freq", "gate", "trigger")) {
     val polyphonic = ProcessorParameter(value = 0f, min = 0f, max = 1f)
-    val channels   = ProcessorParameter(value = 4f, min = 0f, max = 32f)
+    val channels   = ProcessorParameter(value = 4, min = 0f, max = 32f)
 
     private var channelNotes: Array<Int>   = arrayOf()
     private var channelData: Array<Array<Float>> = arrayOf()
@@ -16,8 +16,8 @@ class MIDIInput : Processor(
     private var triggerClear: Int = 0
 
     override fun start(sampleRate: Int) {
-        channelNotes = Array(channels.value.toInt()) {0}
-        channelData  = Array(channels.value.toInt()) {Array(3) { 0f}}
+        channelNotes = Array(channels.value) {0}
+        channelData  = Array(channels.value) {Array(3) { 0f}}
         noteChannels = hashMapOf()
         nextChannel = 0
     }
@@ -75,7 +75,7 @@ class MIDIInput : Processor(
             triggerClear--
             if (triggerClear == 0) {
                 // Clear triggers
-                for (i in 0 until channels.value.toInt()) {
+                for (i in 0 until channels.value) {
                     channelData[i][2] = 0f
                 }
             }
