@@ -3,6 +3,8 @@ package org.noisefloor.engine
 import kotlin.math.PI
 import kotlin.math.sin
 
+private var waveTable: Array<Array<Float>> = Array(Oscillator.Waveform.values().size, { arrayOf<Float>() })
+
 class Oscillator : Processor(
         name    = "getOscillator",
         outputs = arrayOf("output")) {
@@ -11,7 +13,6 @@ class Oscillator : Processor(
 
     enum class Waveform { Sine, Saw, Square, Triangle }
 
-    private val waveTable: Array<Array<Float>> = Array(Waveform.values().size, { arrayOf<Float>() })
     private var sampleRate = 0
     private var currentSample: Float = 0f
 
