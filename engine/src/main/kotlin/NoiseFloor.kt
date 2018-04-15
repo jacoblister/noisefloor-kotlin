@@ -70,7 +70,7 @@ fun processLogPerformace(samplesIn: Array<AudioSamples>, samplesOut: Array<Audio
     process(samplesIn, samplesOut, midiIn, midiOut)
 
     val timeEnd = js("performance.now()")
-    val ratio = round((timeEnd - timeStart) / (timeEnd - timeLast) * 10000) / 100
+    val ratio = (timeEnd - timeStart) / (timeEnd - timeLast) * 100
 
     println("$ratio")
     timeLast = timeStart
