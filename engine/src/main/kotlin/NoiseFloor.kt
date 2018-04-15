@@ -62,6 +62,20 @@ fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, mid
 //    }
 }
 
+var timeLast = 0
+@JsName(name = "processLogPerformance")
+fun processLogPerformace(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, midiIn: Array<MIDIEvent>, midiOut: Array<MIDIEvent>) {
+    val timeStart = js("performance.now()")
+
+    process(samplesIn, samplesOut, midiIn, midiOut)
+
+    val timeEnd = js("performance.now()")
+    val ratio = (timeEnd - timeStart) / (timeEnd - timeLast) * 100
+
+    println("$ratio")
+    timeLast = timeStart
+}
+
 @JsName(name = "query")
 fun query(endpoint: String, query: String): String {
     return "NoiseFloor says $endpoint : $query"
