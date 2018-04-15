@@ -1,7 +1,5 @@
 package org.noisefloor.engine
 
-import kotlin.math.pow
-
 class Gain : Processor(
         name    = "getGain",
         inputs  = arrayOf("input", "getGain"),
@@ -12,7 +10,7 @@ class Gain : Processor(
     fun process(input: Float, gain: Float): Float {
         val sample = when (exponential.value) {
             false -> input * gain
-            true  -> input * gain.pow(3)
+            true  -> input * (gain * gain * gain)
 //            true  -> input * 10f.pow(gain/20f*100f-5f)
         }
         return sample * master.value
