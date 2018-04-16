@@ -64,7 +64,7 @@ fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, mid
 
 var timeLast = 0
 @JsName(name = "processLogPerformance")
-fun processLogPerformace(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, midiIn: Array<MIDIEvent>, midiOut: Array<MIDIEvent>) {
+fun processLogPerformance(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, midiIn: Array<MIDIEvent>, midiOut: Array<MIDIEvent>) {
     val timeStart = js("performance.now()")
 
     process(samplesIn, samplesOut, midiIn, midiOut)
@@ -84,7 +84,7 @@ fun query(endpoint: String, query: String): String {
 //private fun jsonToMap(json: Json): Map<String, String> {
 
 fun main(args : Array<String>) {
-    val event = MIDIEvent(data = arrayOf(1, 2, 3))
+//    val event = MIDIEvent(data = arrayOf(1, 2, 3))
 
 //    val params = getOscillator.getParameters()
 //    params[1].value = params[1].enum!![2]
