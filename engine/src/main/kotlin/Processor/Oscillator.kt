@@ -1,6 +1,7 @@
 package org.noisefloor.engine
 
 import kotlin.math.PI
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 private var waveTable: Array<Array<Float>> = Array(Oscillator.Waveform.values().size, { arrayOf<Float>() })
@@ -29,8 +30,13 @@ class Oscillator : Processor(
         }
     }
 
+    @Suppress("UNCHECKED_CAST", "UNUSED_PARAMETER")
+    private fun jsFloatToInt(value: Any): Int {
+        return js("value | 0")
+    }
+
     fun process(): Float {
-        val result = waveTable[waveform.value.ordinal][currentSample.toInt()]
+        val result = waveTable[waveform.value.ordinal][jsFloatToInt(currentSample)]
 
         currentSample += freq.value
         if (currentSample >= sampleRate) { currentSample -= sampleRate }
