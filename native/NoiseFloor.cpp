@@ -1,9 +1,10 @@
 #include <stdio.h>
 
-#include "ProcessV8Engine.hpp"
-#include "DriverJack.hpp"
+#include "ProcessMock.hpp"
+//#include "ProcessV8Engine.hpp"
+//#include "DriverJack.hpp"
 #include "DriverMock.hpp"
-#include "ClientRESTServer.hpp"
+//#include "ClientRESTServer.hpp"
 #include "ClientMock.hpp"
 
 class NoiseFloor {
@@ -12,9 +13,10 @@ class NoiseFloor {
 
     void run(void);
   private:
-    ProcessV8Engine  process;
-    DriverJack       driver;
-//    DriverMock       driver;
+//    ProcessV8Engine  process;
+    ProcessMock process;
+//    DriverJack       driver;
+    DriverMock       driver;
     ClientMock client;
 //    ClientRESTServer client;
 };

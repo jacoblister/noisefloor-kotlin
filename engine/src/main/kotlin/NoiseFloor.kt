@@ -36,6 +36,22 @@ fun start(sampleRate: Int) {
 
 typealias AudioSamples = Array<Float>
 
+@JsName(name = "speedtest")
+fun speedtest() {
+    val timeStart = js("performance.now()")
+    oscillator.start(48000)
+    println("speedtest start: $timeStart")
+
+    for (i in 0 until 48000) {
+        for (j in 0 until 25600) {
+            val sample = oscillator.process()
+        }
+    }
+
+    val timeEnd = js("performance.now()")
+    println("speedtest end:  $timeEnd")
+}
+
 @JsName(name = "process")
 fun process(samplesIn: Array<AudioSamples>, samplesOut: Array<AudioSamples>, midiIn: Array<MIDIEvent>, midiOut: Array<MIDIEvent>) {
     midiInput.processMidi(midiIn)

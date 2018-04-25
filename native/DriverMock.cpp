@@ -1,6 +1,6 @@
 #include "DriverMock.hpp"
 
-#include <unistd.h>
+#include <iostream>
 
 const int SAMPLE_RATE       = 44100;
 const int SAMPLES_PER_FRAME = 256;
@@ -16,11 +16,13 @@ void process_thread(DriverMock *driver) {
     float buffer[SAMPLES_PER_FRAME];
 
     std::vector<float *> samplesIn = { buffer };
+    std::vector<MIDIEvent> midiIn(0);
 
     while (true) {
-        driver->getProcess().process(samplesIn, samplesIn);
+        std::cout << "mock driver" << std::endl;
+        driver->getProcess().process(samplesIn, samplesIn, midiIn, midiIn);
 
-        usleep(1000000);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
