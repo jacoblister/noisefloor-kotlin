@@ -43,9 +43,9 @@ DriverJack.$O: DriverJack.cpp DriverJack.hpp
 ClientMock.$O: ClientMock.cpp ClientMock.hpp
 ClientRESTServer.$O: ClientRESTServer.cpp ClientRESTServer.hpp
 
-DRIVERS = DriverMock.$O #DriverJack.$O
-CLIENTS = ClientMock.$O #ClientRESTServer.$O
-PROCESS = ProcessMock.$O #ProcessV8Engine.$O
+DRIVERS = DriverMock.$O DriverJack.$O
+CLIENTS = ClientMock.$O ClientRESTServer.$O
+PROCESS = ProcessMock.$O ProcessV8Engine.$O
 ALL = NoiseFloor.$O $(PROCESS) $(DRIVERS) $(CLIENTS)
 
 NoiseFloor: $(ALL)
