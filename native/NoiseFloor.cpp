@@ -1,11 +1,38 @@
-#include <stdio.h>
-
+#if PROCESS_MOCK
 #include "ProcessMock.hpp"
+#define PROCESS ProcessMock
+#endif
+#if PROCESS_V8
+#define PROCESS ProcessV8
 #include "ProcessV8Engine.hpp"
-#include "DriverJack.hpp"
+#endif
+
+#if AUDIO_MOCK
 #include "DriverMock.hpp"
-//#include "ClientRESTServer.hpp"
+#define DRIVER DriverMock
+#endif
+#if AUDIO_JACK
+#include "DriverJack.hpp"
+#define DRIVER DriverJack
+#endif
+#if AUDIO_ASIO
+#include "DriverASIO.hpp"
+#define DRIVER DriverASIO
+#endif
+
+#if CLIENT_MOCK
 #include "ClientMock.hpp"
+#define CLIENT ClientMock
+#endif
+#if CLIENT_RESTSERVER
+#include "ClientRESTServer.hpp"
+#define CLIENT ClientRESTServer
+#endif
+
+#include <iostream>
+#include <thread>
+#include <stdio.h>
+#include <conio.h>
 
 class NoiseFloor {
   public:
@@ -13,21 +40,31 @@ class NoiseFloor {
 
     void run(void);
   private:
-    ProcessV8Engine  process;
-//    ProcessMock process;
-    DriverJack       driver;
-//    DriverMock       driver;
-    ClientMock client;
-//    ClientRESTServer client;
+    PROCESS process;
+    DRIVER driver;
+    CLIENT client;
 };
 
 void NoiseFloor::run(void) {
-    printf("run noisefloor\n");
-
     driver.init();
-    driver.start();
+    if (!driver.start()) {
+        std::cout << "Audio start failed" << std::endl;
+        return;
+    }
 
-    client.run();
+    client.start();
+
+    // Run until ESC pressed
+    std::cout << "Press ESC to exit" << std::endl;
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        if (kbhit() && getch() == 27) {
+            break;
+        }
+    }
+
+    client.stop();
+    driver.stop();
 }
 
 int main(int argc, char* argv[]) {
@@ -35,6 +72,5 @@ int main(int argc, char* argv[]) {
 
     noiseFloor.run();
 
-    printf("noisefloor\n");
     return 0;
 }
