@@ -13,8 +13,15 @@ class DriverASIO {
     bool start();
     bool stop();
 
-    inline Process& getProcess(void) { return process; }
-    inline bool getPostOutput(void)  { return postOutput; }
+    inline Process& getProcess(void)                { return process;            }
+    inline long getInputChannels(void)              { return inputChannels;      }
+    inline long getOutputChannels(void)             { return outputChannels;     }
+    inline long getPreferredSize(void)              { return preferredSize;      }
+    inline ASIOBufferInfo*  getBufferInfo(void)     { return bufferInfo.data();  }
+    inline ASIOChannelInfo* getChannelInfo(void)    { return channelInfo.data(); }
+    inline bool getPostOutput(void)                 { return postOutput;         }
+    inline std::vector<float *> getSamplesIn(void)  { return samplesIn;          }
+    inline std::vector<float *> getSamplesOut(void) { return samplesOut;         }
   private:
     Process& process;
 
@@ -32,5 +39,9 @@ class DriverASIO {
 	ASIOSampleRate sampleRate;
 
 	// Buffers
-	ASIOBufferInfo bufferInfos[16];
+	std::vector<ASIOBufferInfo>  bufferInfo;
+	std::vector<ASIOChannelInfo> channelInfo;
+
+	std::vector<float *> samplesIn;
+	std::vector<float *> samplesOut;
 };
