@@ -45,7 +45,32 @@ DEFINES=-D$(TARGET_PLATFORM) -D$(TARGET_AUDIO) -D$(TARGET_PROCESS) -D$(TARGET_CL
 
 all: NoiseFloor
 
-ASIO_OBJ = asio.obj asiolist.obj asiodrivers.obj
+ifeq ($(TARGET_AUDIO), AUDIO_MOCK)
+    PLATFORM_DRIVER = DriverMock.$O
+endif
+ifeq ($(TARGET_AUDIO), AUDIO_JACK)
+    PLATFORM_DRIVER = DriverJack.$O
+endif
+ifeq ($(TARGET_AUDIO), AUDIO_ASIO)
+    PLATFORM_OBJ = asio.obj asiolist.obj asiodrivers.obj
+    PLATFORM_DRIVER = DriverASIO.$O
+endif
+
+ifeq ($(TARGET_PROCESS), PROCESS_MOCK)
+    PLATFORM_PROCESS = ProcessMock.$O
+endif
+ifeq ($(TARGET_PROCESS), PROCESS_V8)
+    PLATFORM_PROCESS = ProcessV8Engine.$O
+endif
+
+ifeq ($(TARGET_CLIENT), CLIENT_MOCK)
+    PLATFORM_CLIENT = ClientMock.$O
+endif
+ifeq ($(TARGET_CLIENT), CLIENT_RESTSERVER)
+    PLATFORM_CLIENT = ClientRESTServer.$O
+endif
+
+
 asio.obj: asio/asio.cpp
 	cl -c -DWIN32 asio/asio.cpp
 
@@ -67,10 +92,10 @@ DriverJack.$O: DriverJack.cpp DriverJack.hpp
 ClientMock.$O: ClientMock.cpp ClientMock.hpp
 ClientRESTServer.$O: ClientRESTServer.cpp ClientRESTServer.hpp
 
-DRIVERS = DriverMock.$O DriverASIO.$O #DriverJack.$O
-CLIENTS = ClientMock.$O #ClientRESTServer.$O
-PROCESS = ProcessMock.$O #ProcessV8Engine.$O
-ALL = NoiseFloor.$O $(PROCESS) $(DRIVERS) $(CLIENTS) $(ASIO_OBJ)
+DRIVERS = $(PLATFORM_DRIVER)
+PROCESS = $(PLATFORM_PROCESS)
+CLIENTS = $(PLATFORM_CLIENT)
+ALL = NoiseFloor.$O $(DRIVERS) $(PROCESS) $(CLIENTS) $(PLATFORM_OBJ)
 
 NoiseFloor: $(ALL)
 	$(LINK) $(ALL) $(LINKFLAGS) $(LINKEXTRA)

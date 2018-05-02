@@ -39,10 +39,11 @@ int process_jack(jack_nframes_t nframes, void *arg) {
 	return 0;
 }
 
-void DriverJack::init() {
+bool DriverJack::init() {
+    return true;
 }
 
-void DriverJack::start() {
+bool DriverJack::start() {
 	const char **ports;
 	const char *client_name = "noisefloor";
 	const char *server_name = NULL;
@@ -60,4 +61,9 @@ void DriverJack::start() {
 
     jack_set_process_callback(jack_client, process_jack, this);
 	jack_activate(jack_client);
+
+	return true;
+}
+
+bool DriverJack::stop() {
 }

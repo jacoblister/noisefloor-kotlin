@@ -3,7 +3,7 @@
 #define PROCESS ProcessMock
 #endif
 #if PROCESS_V8
-#define PROCESS ProcessV8
+#define PROCESS ProcessV8Engine
 #include "ProcessV8Engine.hpp"
 #endif
 
@@ -32,7 +32,31 @@
 #include <iostream>
 #include <thread>
 #include <stdio.h>
-#include <conio.h>
+
+#if LINUX
+#include <termios.h>
+#include <unistd.h>
+#include <assert.h>
+#include <string.h>
+int getch(void) {
+      int c=0;
+
+      struct termios org_opts, new_opts;
+      int res=0;
+          //-----  store old settings -----------
+      res=tcgetattr(STDIN_FILENO, &org_opts);
+      assert(res==0);
+          //---- set new terminal parms --------
+      memcpy(&new_opts, &org_opts, sizeof(new_opts));
+      new_opts.c_lflag &= ~(ICANON | ECHO | ECHOE | ECHOK | ECHONL | ECHOPRT | ECHOKE | ICRNL);
+      tcsetattr(STDIN_FILENO, TCSANOW, &new_opts);
+      c=getchar();
+          //------  restore old settings ---------
+      res=tcsetattr(STDIN_FILENO, TCSANOW, &org_opts);
+      assert(res==0);
+      return(c);
+}
+#endif
 
 class NoiseFloor {
   public:
@@ -56,12 +80,7 @@ void NoiseFloor::run(void) {
 
     // Run until ESC pressed
     std::cout << "Press ESC to exit" << std::endl;
-    while (true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        if (kbhit() && getch() == 27) {
-            break;
-        }
-    }
+    while (getch() != 27) { }
 
     client.stop();
     driver.stop();

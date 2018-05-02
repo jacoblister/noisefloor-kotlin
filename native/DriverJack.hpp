@@ -6,8 +6,9 @@
 class DriverJack {
   public:
     DriverJack(Process& process) : process(process) { }
-    void init();
-    void start();
+    bool init();
+    bool start();
+    bool stop();
 
     inline Process&       getProcess(void)         { return process; }
     inline jack_client_t* getJackClient(void)      { return jack_client; }
