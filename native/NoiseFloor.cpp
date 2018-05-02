@@ -57,6 +57,9 @@ int getch(void) {
       return(c);
 }
 #endif
+#if WINDOWS
+#include <conio.h>
+#endif
 
 class NoiseFloor {
   public:
