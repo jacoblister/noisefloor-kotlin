@@ -62,6 +62,9 @@ endif
 ifeq ($(TARGET_PROCESS), PROCESS_V8)
     PLATFORM_PROCESS = ProcessV8Engine.$O
 endif
+ifeq ($(TARGET_PROCESS), PROCESS_CPP)
+    PLATFORM_PROCESS = ProcessCPP.$O
+endif
 
 ifeq ($(TARGET_CLIENT), CLIENT_MOCK)
     PLATFORM_CLIENT = ClientMock.$O
@@ -84,6 +87,7 @@ NoiseFloor.$O: NoiseFloor.cpp
 
 ProcessMock.$O: ProcessMock.cpp ProcessMock.hpp
 ProcessV8Engine.$O: ProcessV8Engine.cpp ProcessV8Engine.hpp
+ProcessCPP.$O: ProcessCPP.cpp ProcessCPP.hpp Processor/Oscillator.hpp
 
 DriverMock.$O: DriverMock.cpp DriverMock.hpp
 DriverASIO.$O: DriverASIO.cpp DriverASIO.hpp

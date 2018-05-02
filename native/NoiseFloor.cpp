@@ -6,6 +6,10 @@
 #define PROCESS ProcessV8Engine
 #include "ProcessV8Engine.hpp"
 #endif
+#if PROCESS_CPP
+#define PROCESS ProcessCPP
+#include "ProcessCPP.hpp"
+#endif
 
 #if AUDIO_MOCK
 #include "DriverMock.hpp"
