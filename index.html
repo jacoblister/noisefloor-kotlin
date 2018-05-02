@@ -38,12 +38,47 @@
         var output     = event.outputBuffer.getChannelData(0);
         var midiEvents = noiseweb.getMIDIEvents()
 
-        noiseengine.process(sampleBuffer, sampleBuffer, midiEvents, []);
+        noiseengine.processLogPerformance(sampleBuffer, sampleBuffer, midiEvents, []);
         event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
         event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
     }
     node.connect(audioContext.destination);
 </script>
+
+<!--
+<script type="text/javascript">
+    var noiseengine = engine.org.noisefloor.engine
+    noiseengine.speedtest();
+</script>
+-->
+
+<!--
+<script type="text/javascript">
+    var noiseengine = engine.org.noisefloor.engine
+
+    var frameLength  = 512
+    var sampleBuffer = [
+        new Float32Array(Array(frameLength).fill(0)),
+        new Float32Array(Array(frameLength).fill(0))
+        ];
+    var audioContext = new AudioContext();
+
+    oscillator = eval ("new noiseengine.Oscillator()");
+    oscillator.start(audioContext.sampleRate)
+    var node = audioContext.createScriptProcessor(frameLength, 2, 2);
+    node.onaudioprocess = function (event) {
+        var output     = event.outputBuffer.getChannelData(0);
+
+        for (i = 0; i < sampleBuffer[0].length; i++) {
+            sampleBuffer[0][i] = oscillator.process()
+        }
+        oscillator.process(sampleBuffer, sampleBuffer, [], []);
+        event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
+        event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
+    }
+    node.connect(audioContext.destination);
+</script>
+-->
 
 <div class="waveformcontainer">
     Waveform
