@@ -2,6 +2,7 @@ ifeq ($(OS),Windows_NT)
     # Windows
     TARGET_PLATFORM=WINDOWS
     TARGET_AUDIO=AUDIO_ASIO
+    TARGET_MIDI=MIDI_WDM
     TARGET_PROCESS=PROCESS_CPP
     TARGET_CLIENT=CLIENT_MOCK
 
@@ -14,6 +15,7 @@ else
     # Linux
     TARGET_PLATFORM=LINUX
     TARGET_AUDIO=AUDIO_JACK
+    TARGET_MIDI=MIDI_MOCK
     TARGET_PROCESS=PROCESS_V8
     TARGET_CLIENT=CLIENT_MOCK
 
@@ -35,7 +37,7 @@ else
     LINKEXTRA=-o NoiseFloor
 endif
 LINK=$(CPP)
-DEFINES=-D$(TARGET_PLATFORM) -D$(TARGET_AUDIO) -D$(TARGET_PROCESS) -D$(TARGET_CLIENT)
+DEFINES=-D$(TARGET_PLATFORM) -D$(TARGET_AUDIO) -D$(TARGET_MIDI) -D$(TARGET_PROCESS) -D$(TARGET_CLIENT)
 
 %.o: %.cpp
 	$(CPP) $(DEFINES) -c -O2 -o $@ $< $(CFLAGS)
@@ -46,14 +48,21 @@ DEFINES=-D$(TARGET_PLATFORM) -D$(TARGET_AUDIO) -D$(TARGET_PROCESS) -D$(TARGET_CL
 all: NoiseFloor
 
 ifeq ($(TARGET_AUDIO), AUDIO_MOCK)
-    PLATFORM_DRIVER = DriverMock.$O
+    PLATFORM_DRIVER_AUDIO = DriverAudioMock.$O
 endif
 ifeq ($(TARGET_AUDIO), AUDIO_JACK)
-    PLATFORM_DRIVER = DriverJack.$O
+    PLATFORM_DRIVER_AUDIO = DriverAudioJack.$O
 endif
 ifeq ($(TARGET_AUDIO), AUDIO_ASIO)
     PLATFORM_OBJ = asio.obj asiolist.obj asiodrivers.obj
-    PLATFORM_DRIVER = DriverASIO.$O
+    PLATFORM_DRIVER_AUDIO = DriverAudioASIO.$O
+endif
+
+ifeq ($(TARGET_MIDI), MIDI_MOCK)
+    PLATFORM_DRIVER_MIDI = DriverMidiMock.$O
+endif
+ifeq ($(TARGET_MIDI), MIDI_WDM)
+    PLATFORM_DRIVER_MIDI = DriverMidiWDM.$O
 endif
 
 ifeq ($(TARGET_PROCESS), PROCESS_MOCK)
@@ -89,14 +98,17 @@ ProcessMock.$O: ProcessMock.cpp ProcessMock.hpp
 ProcessV8Engine.$O: ProcessV8Engine.cpp ProcessV8Engine.hpp
 ProcessCPP.$O: ProcessCPP.cpp ProcessCPP.hpp Processor/Oscillator.hpp
 
-DriverMock.$O: DriverMock.cpp DriverMock.hpp
-DriverASIO.$O: DriverASIO.cpp DriverASIO.hpp
-DriverJack.$O: DriverJack.cpp DriverJack.hpp
+DriverAudioMock.$O: DriverAudioMock.cpp DriverAudioMock.hpp
+DriverAudioASIO.$O: DriverAudioASIO.cpp DriverAudioASIO.hpp
+DriverAudioJack.$O: DriverAudioJack.cpp DriverAudioJack.hpp
+
+DriverMidiMock.$O: DriverMidiMock.cpp DriverMidiMock.hpp
+DriverMidiWDM.$O: DriverMidiWDM.cpp DriverMidiWDM.hpp
 
 ClientMock.$O: ClientMock.cpp ClientMock.hpp
 ClientRESTServer.$O: ClientRESTServer.cpp ClientRESTServer.hpp
 
-DRIVERS = $(PLATFORM_DRIVER)
+DRIVERS = $(PLATFORM_DRIVER_AUDIO) $(PLATFORM_DRIVER_MIDI)
 PROCESS = $(PLATFORM_PROCESS)
 CLIENTS = $(PLATFORM_CLIENT)
 ALL = NoiseFloor.$O $(DRIVERS) $(PROCESS) $(CLIENTS) $(PLATFORM_OBJ)

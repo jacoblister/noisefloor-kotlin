@@ -1,14 +1,17 @@
 #include "Process.hpp"
+#include "DriverMidi.hpp"
 
 #include <thread>
 #include <atomic>
 
-class DriverMock {
+class DriverAudioMock {
   public:
-    DriverMock(Process& process) : process(process) { }
+    DriverAudioMock(Process& process) : process(process) { }
     result<bool> init();
     result<bool> start();
     result<bool> stop();
+
+    inline void setMidiDriver(DriverMidi *driverMidi)  { }
 
     inline Process& getProcess(void) { return process; }
     inline bool getStopRequest(void) { return stopRequest; }

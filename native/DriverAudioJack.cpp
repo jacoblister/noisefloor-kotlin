@@ -1,4 +1,4 @@
-#include "DriverJack.hpp"
+#include "DriverAudioJack.hpp"
 
 #include <iostream>
 #include <string.h>
@@ -39,11 +39,11 @@ int process_jack(jack_nframes_t nframes, void *arg) {
 	return 0;
 }
 
-bool DriverJack::init() {
+bool DriverAudioJack::init() {
     return true;
 }
 
-bool DriverJack::start() {
+bool DriverAudioJack::start() {
 	const char **ports;
 	const char *client_name = "noisefloor";
 	const char *server_name = NULL;
@@ -65,5 +65,5 @@ bool DriverJack::start() {
 	return true;
 }
 
-bool DriverJack::stop() {
+bool DriverAudioJack::stop() {
 }

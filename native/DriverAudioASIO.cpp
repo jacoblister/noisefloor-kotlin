@@ -1,4 +1,4 @@
-#include "DriverASIO.hpp"
+#include "DriverAudioASIO.hpp"
 
 #include <stdint.h>
 #include <iostream>
@@ -10,7 +10,7 @@
 #define SIGNED32_MAX 2147483647.0;
 
 // Driver object, no callback parameter exists for this
-static DriverASIO *driver;
+static DriverAudioASIO *driver;
 
 void ASIO_bufferSwitch(long index, ASIOBool processNow) {
     for (int i = 0; i < driver->getInputChannels(); i++) {
@@ -20,8 +20,12 @@ void ASIO_bufferSwitch(long index, ASIOBool processNow) {
         }
     }
 
-    std::vector<MIDIEvent> midiIn(0);
-    driver->getProcess().process(driver->getSamplesIn(), driver->getSamplesOut(), midiIn, midiIn);
+    std::vector<MIDIEvent> midiIn;
+    std::vector<MIDIEvent> midiOut;
+    if (driver->getMidiDriver()) {
+        midiIn = driver->getMidiDriver()->readMidiEvents();
+    }
+    driver->getProcess().process(driver->getSamplesIn(), driver->getSamplesOut(), midiIn, midiOut);
 
     for (int i = 0; i < driver->getOutputChannels(); i++) {
         for (int j = 0; j < driver->getPreferredSize(); j++) {
@@ -51,11 +55,11 @@ ASIOTime *ASIO_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool pro
     return 0;
 }
 
-result<bool> DriverASIO::init() {
+result<bool> DriverAudioASIO::init() {
     return true;
 }
 
-result<bool> DriverASIO::start() {
+result<bool> DriverAudioASIO::start() {
 	ASIOError res;
 
     // Basic init
@@ -136,7 +140,7 @@ result<bool> DriverASIO::start() {
     return true;
 }
 
-result<bool> DriverASIO::stop() {
+result<bool> DriverAudioASIO::stop() {
     std::cout << "ASIO Stop " << std::endl;
     ASIOStop();
     std::cout << "ASIO ASIODisposeBuffers " << std::endl;

@@ -16,16 +16,25 @@
 #endif
 
 #if AUDIO_MOCK
-#include "DriverMock.hpp"
-#define DRIVER DriverMock
+#include "DriverAudioMock.hpp"
+#define DRIVER_AUDIO DriverAudioMock
 #endif
 #if AUDIO_JACK
-#include "DriverJack.hpp"
-#define DRIVER DriverJack
+#include "DriverAudioJack.hpp"
+#define DRIVER_AUDIO DriverAudioJack
 #endif
 #if AUDIO_ASIO
-#include "DriverASIO.hpp"
-#define DRIVER DriverASIO
+#include "DriverAudioASIO.hpp"
+#define DRIVER_AUDIO DriverAudioASIO
+#endif
+
+#if MIDI_MOCK
+#include "DriverMidiMock.hpp"
+#define DRIVER_MIDI DriverMidiMock
+#endif
+#if MIDI_WDM
+#include "DriverMidiWDM.hpp"
+#define DRIVER_MIDI DriverMidiWDM
 #endif
 
 #if CLIENT_MOCK
@@ -39,20 +48,28 @@
 
 class NoiseFloor {
   public:
-    NoiseFloor(bool nothing) : process(), driver(process), client(process) {}
+    NoiseFloor(bool nothing) : process(), driverAudio(process), driverMidi(), client(process) {}
 
     void run(void);
   private:
-    PROCESS process;
-    DRIVER driver;
-    CLIENT client;
+    PROCESS      process;
+    DRIVER_AUDIO driverAudio;
+    DRIVER_MIDI  driverMidi;
+    CLIENT       client;
 };
 
 void NoiseFloor::run(void) {
     result<bool> result;
 
-    driver.init();
-    if (!(result = driver.start())) {
+    driverMidi.init();
+    if (!(result = driverMidi.start())) {
+        std::cout << "Midi start failed: " << result.errorMessage() << std::endl;
+        return;
+    }
+
+    driverAudio.init();
+    driverAudio.setMidiDriver(&driverMidi);
+    if (!(result = driverAudio.start())) {
         std::cout << "Audio start failed: " << result.errorMessage() << std::endl;
         return;
     }
@@ -66,7 +83,7 @@ void NoiseFloor::run(void) {
     while (getch() != 27) { }
 
     client.stop();
-    driver.stop();
+    driverAudio.stop();
 }
 
 int main(int argc, char* argv[]) {

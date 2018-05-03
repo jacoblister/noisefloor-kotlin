@@ -1,11 +1,11 @@
-#include "DriverMock.hpp"
+#include "DriverAudioMock.hpp"
 
 #include <iostream>
 
 const int SAMPLE_RATE       = 44100;
 const int SAMPLES_PER_FRAME = 256;
 
-void process_thread(DriverMock *driver) {
+void process_thread(DriverAudioMock *driver) {
     static bool is_init = 0;
     if (!is_init) {
         driver->getProcess().init();
@@ -26,18 +26,18 @@ void process_thread(DriverMock *driver) {
     }
 }
 
-result<bool> DriverMock::init() {
+result<bool> DriverAudioMock::init() {
     return true;
 }
 
-result<bool> DriverMock::start() {
+result<bool> DriverAudioMock::start() {
     this->stopRequest = false;
     this->thread = std::thread(process_thread, this);
 
     return true;
 }
 
-result<bool> DriverMock::stop() {
+result<bool> DriverAudioMock::stop() {
     this->stopRequest = true;
     this->thread.join();
 

@@ -1,4 +1,5 @@
 #include "Process.hpp"
+#include "DriverMidi.hpp"
 
 #define WIN32 1
 #include "asio/asiosys.h"		// platform definition
@@ -6,12 +7,15 @@
 #include "asio/asiodrivers.h"
 
 
-class DriverASIO {
+class DriverAudioASIO {
   public:
-    DriverASIO(Process& process) : process(process) { }
+    DriverAudioASIO(Process& process) : process(process) { }
     result<bool> init();
     result<bool> start();
     result<bool> stop();
+
+    inline DriverMidi *getMidiDriver(void )            { return this->driverMidi;       }
+    inline void setMidiDriver(DriverMidi *driverMidi)  { this->driverMidi = driverMidi; }
 
     inline Process& getProcess(void)                { return process;            }
     inline long getInputChannels(void)              { return inputChannels;      }
@@ -24,6 +28,7 @@ class DriverASIO {
     inline std::vector<float *> getSamplesOut(void) { return samplesOut;         }
   private:
     Process& process;
+    DriverMidi *driverMidi = NULL;
 
     // Driver info
     AsioDrivers asioDrivers;
