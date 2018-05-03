@@ -15,7 +15,7 @@ void process_thread(DriverMock *driver) {
 
     float buffer[SAMPLES_PER_FRAME];
 
-    std::vector<float *> samplesIn = { buffer };
+    std::vector<float *> samplesIn = { buffer, buffer };
     std::vector<MIDIEvent> midiIn(0);
 
     while (!driver->getStopRequest()) {
@@ -26,17 +26,20 @@ void process_thread(DriverMock *driver) {
     }
 }
 
-bool DriverMock::init() {
+result<bool> DriverMock::init() {
+    return true;
 }
 
-bool DriverMock::start() {
+result<bool> DriverMock::start() {
     this->stopRequest = false;
     this->thread = std::thread(process_thread, this);
 
     return true;
 }
 
-bool DriverMock::stop() {
+result<bool> DriverMock::stop() {
     this->stopRequest = true;
     this->thread.join();
+
+    return true;
 }

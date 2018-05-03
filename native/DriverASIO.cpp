@@ -51,23 +51,34 @@ ASIOTime *ASIO_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool pro
     return 0;
 }
 
-void DriverASIO::init() {
+result<bool> DriverASIO::init() {
+    return true;
 }
 
-bool DriverASIO::start() {
-	ASIOError result;
+result<bool> DriverASIO::start() {
+	ASIOError res;
 
     // Basic init
     driver = this;
-    if (!this->asioDrivers.loadDriver(ASIO_DRIVER_NAME)) { return false; }
-    if (ASIOInit(&this->driverInfo) != ASE_OK)           { return false; }
+    if (!this->asioDrivers.loadDriver(ASIO_DRIVER_NAME)) {
+        return result<bool>(false, "ASIO driver load failed");
+    }
+    if (ASIOInit(&this->driverInfo) != ASE_OK) {
+        return result<bool>(false, "ASIO init failed");
+    }
 
 //    ASIOControlPanel();
 
     // Get driver info
-    if (ASIOGetChannels(&this->inputChannels, &this->outputChannels) != ASE_OK)                                { return false; }
-    if (ASIOGetBufferSize(&this->minSize, &this->maxSize, &this->preferredSize, &this->granularity) != ASE_OK) { return false; }
-    if (ASIOGetSampleRate(&this->sampleRate) != ASE_OK)                                                        { return false; }
+    if (ASIOGetChannels(&this->inputChannels, &this->outputChannels) != ASE_OK) {
+        return result<bool>(false, "ASIO get channels failed");
+    }
+    if (ASIOGetBufferSize(&this->minSize, &this->maxSize, &this->preferredSize, &this->granularity) != ASE_OK) {
+        return result<bool>(false, "ASIO get buffer size failed");
+    }
+    if (ASIOGetSampleRate(&this->sampleRate) != ASE_OK) {
+        return result<bool>(false, "ASIO get sample rate failed");
+    }
     this->postOutput = (ASIOOutputReady() == ASE_OK);
     std::cout << "Post Output: "    << this->postOutput    << std::endl;
     std::cout << "Preferred Size: " << this->preferredSize << std::endl;
@@ -93,31 +104,39 @@ bool DriverASIO::start() {
     this->asioCallbacks.sampleRateDidChange  = &ASIO_sampleRateChanged;
     this->asioCallbacks.asioMessage          = &ASIO_asioMessages;
     this->asioCallbacks.bufferSwitchTimeInfo = &ASIO_bufferSwitchTimeInfo;
-	result = ASIOCreateBuffers(this->bufferInfo.data(),
+	res = ASIOCreateBuffers(this->bufferInfo.data(),
 		this->inputChannels + this->outputChannels,
 		this->preferredSize, &this->asioCallbacks);
-    std::cout << "Allocating Buffers: " << result << std::endl;
-    if (result != ASE_OK)                                { return false; }
+    std::cout << "Allocating Buffers: " << res << std::endl;
+    if (res != ASE_OK) {
+        return result<bool>(false, "ASIO allocate buffers failed");
+    }
 
     // Get buffer details
     this->channelInfo.resize(this->inputChannels + this->outputChannels);
     for (int i = 0; i < this->inputChannels + this->outputChannels; i++) {
         this->channelInfo[i].channel = this->bufferInfo[i].channelNum;
         this->channelInfo[i].isInput = this->bufferInfo[i].isInput;
-        result = ASIOGetChannelInfo(&this->channelInfo[i]);
-        if (result != ASE_OK)                            { return false; }
-        if (this->channelInfo[i].type != ASIOSTInt32LSB) { return false;}
+        res = ASIOGetChannelInfo(&this->channelInfo[i]);
+        if (res != ASE_OK) {
+            return result<bool>(false, "ASIO get channel info failed");
+        }
+        if (this->channelInfo[i].type != ASIOSTInt32LSB) {
+            return result<bool>(false, "ASIO 32 bit sample supported only");
+        }
     }
 
     // Start Audio
-    if (ASIOStart() != ASE_OK)                           { return false; }
+    if (ASIOStart() != ASE_OK)  {
+        return result<bool>(false, "ASIO start failed");
+    }
 
     driver->getProcess().start(this->sampleRate, this->preferredSize);
 
     return true;
 }
 
-bool DriverASIO::stop() {
+result<bool> DriverASIO::stop() {
     std::cout << "ASIO Stop " << std::endl;
     ASIOStop();
     std::cout << "ASIO ASIODisposeBuffers " << std::endl;

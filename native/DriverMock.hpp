@@ -6,9 +6,9 @@
 class DriverMock {
   public:
     DriverMock(Process& process) : process(process) { }
-    bool init();
-    bool start();
-    bool stop();
+    result<bool> init();
+    result<bool> start();
+    result<bool> stop();
 
     inline Process& getProcess(void) { return process; }
     inline bool getStopRequest(void) { return stopRequest; }

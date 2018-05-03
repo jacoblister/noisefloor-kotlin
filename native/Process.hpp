@@ -1,4 +1,5 @@
 #pragma once
+#include "include/result.hpp"
 
 #include <string>
 #include <vector>
@@ -12,9 +13,9 @@ struct MIDIEvent {
 class Process {
   public:
     Process() {}
-    virtual void init() {};
-    virtual void start(int sampling_rate, int samples_per_frame) {};
-    virtual void process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) {};
-    virtual void stop() {};
+    virtual result<bool> init() { return false; };
+    virtual result<bool> start(int samplingRate, int samplesPerFrame) { return false; };
+    virtual result<bool> process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) { return false; };
+    virtual result<bool> stop() { return false; };
     virtual std::string query(std::string endpoint, std::string request) { return ""; };
 };

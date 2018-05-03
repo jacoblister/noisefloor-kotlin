@@ -2,16 +2,18 @@
 
 #include <iostream>
 
-void ProcessCPP::init(void) {
-
+result<bool> ProcessCPP::init(void) {
+    return true;
 }
 
-void ProcessCPP::start(int sampling_rate, int samples_per_frame) {
-    this->samplesPerFrame = samples_per_frame;
-    this->oscillator.start(sampling_rate);
+result<bool> ProcessCPP::start(int samplingRate, int samplesPerFrame) {
+    this->samplesPerFrame = samplesPerFrame;
+    this->oscillator.start(samplingRate);
+
+    return true;
 }
 
-void ProcessCPP::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) {
+result<bool> ProcessCPP::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) {
 //    for (int i = 0; i < this->samplesPerFrame; i++) {
 //        samplesOut[0][i] = samplesIn[0][i];
 //        samplesOut[1][i] = samplesIn[1][i];
@@ -22,8 +24,12 @@ void ProcessCPP::process(std::vector<float *> samplesIn, std::vector<float *> sa
         samplesOut[0][i] = sample;
         samplesOut[1][i] = sample;
     }
+
+    return true;
 }
 
-void ProcessCPP::stop(void) {}
+result<bool> ProcessCPP::stop(void) {
+    return true;
+}
 
 std::string ProcessCPP::query(std::string endpoint, std::string request) { return ""; }

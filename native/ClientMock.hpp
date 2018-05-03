@@ -4,8 +4,8 @@ class ClientMock {
   public:
     ClientMock(Process &process) : process(process) { }
     void init();
-    bool start();
-    bool stop();
+    result<bool> start();
+    result<bool> stop();
   private:
     Process &process;
 };

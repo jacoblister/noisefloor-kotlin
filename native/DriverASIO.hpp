@@ -9,9 +9,9 @@
 class DriverASIO {
   public:
     DriverASIO(Process& process) : process(process) { }
-    void init();
-    bool start();
-    bool stop();
+    result<bool> init();
+    result<bool> start();
+    result<bool> stop();
 
     inline Process& getProcess(void)                { return process;            }
     inline long getInputChannels(void)              { return inputChannels;      }

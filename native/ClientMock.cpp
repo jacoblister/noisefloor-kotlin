@@ -6,10 +6,10 @@
 void ClientMock::init() {
 }
 
-bool ClientMock::start() {
+result<bool> ClientMock::start() {
     return true;
 }
 
-bool ClientMock::stop() {
+result<bool> ClientMock::stop() {
     return true;
 }
