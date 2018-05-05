@@ -1,4 +1,5 @@
 #if LINUX
+#include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 #include <assert.h>

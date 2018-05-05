@@ -10,10 +10,10 @@
 class ProcessV8Engine : public Process {
   public:
     ProcessV8Engine() : query_flag(0) {}
-    virtual void init(void);
-    virtual void start(int sampling_rate, int samples_per_frame);
-    virtual void process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut);
-    virtual void stop(void);
+    virtual result<bool> init(void);
+    virtual result<bool> start(int sampling_rate, int samples_per_frame);
+    virtual result<bool> process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut);
+    virtual result<bool> stop(void);
     virtual std::string query(std::string endpoint, std::string request);
   private:
     void compile(std::string filename);

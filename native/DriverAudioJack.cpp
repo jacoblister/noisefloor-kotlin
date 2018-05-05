@@ -4,7 +4,7 @@
 #include <string.h>
 
 int process_jack(jack_nframes_t nframes, void *arg) {
-    DriverJack *driver = (DriverJack *)arg;
+    DriverAudioJack *driver = (DriverAudioJack *)arg;
 
     static bool is_init = 0;
     if (!is_init) {

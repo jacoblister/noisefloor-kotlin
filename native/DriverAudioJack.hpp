@@ -1,14 +1,17 @@
 #include "Process.hpp"
+#include "DriverMidi.hpp"
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
 
-class DriverJack {
+class DriverAudioJack {
   public:
-    DriverJack(Process& process) : process(process) { }
+    DriverAudioJack(Process& process) : process(process) { }
     bool init();
     bool start();
     bool stop();
+
+    inline void setMidiDriver(DriverMidi *driverMidi)  { }
 
     inline Process&       getProcess(void)         { return process; }
     inline jack_client_t* getJackClient(void)      { return jack_client; }

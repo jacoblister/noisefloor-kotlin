@@ -42,11 +42,13 @@ void ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args) {
   fflush(stdout);
 }
 
-void ProcessV8Engine::init(void) {
+result<bool> ProcessV8Engine::init(void) {
     printf("v8 init\n");
+
+    return true;
 }
 
-void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
+result<bool> ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     this->samples_per_frame = samples_per_frame;
 
     v8::V8::InitializeICUDefaultLocation("");
@@ -103,9 +105,11 @@ void ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     v8::Local<v8::Value>    query_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "query"));
     v8::Local<v8::Function> query_function = v8::Local<v8::Function>::Cast(query_function_value);
     this->query_function = v8::Eternal<v8::Function>(this->isolate, query_function);
+
+    return true;
 }
 
-void ProcessV8Engine::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) {
+result<bool> ProcessV8Engine::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) {
     // Run the script to get the result.
     v8::HandleScope handle_scope(this->isolate);
     v8::Local<v8::Context> local_context = this->context.Get(this->isolate);
@@ -166,14 +170,18 @@ void ProcessV8Engine::process(std::vector<float *> samplesIn, std::vector<float 
         lk.unlock();
         this->query_cv.notify_one();
     }
+
+    return true;
 }
 
-void ProcessV8Engine::stop(void) {
+result<bool> ProcessV8Engine::stop(void) {
     // Dispose the isolate and tear down V8.
     this->isolate->Dispose();
     v8::V8::Dispose();
     v8::V8::ShutdownPlatform();
     delete this->create_params.array_buffer_allocator;
+
+    return true;
 }
 
 std::string ProcessV8Engine::query(std::string endpoint, std::string request) {
