@@ -16,11 +16,17 @@ void process_thread(DriverAudioMock *driver) {
     float buffer[SAMPLES_PER_FRAME];
 
     std::vector<float *> samplesIn = { buffer, buffer };
-    std::vector<MIDIEvent> midiIn(0);
 
     while (!driver->getStopRequest()) {
         std::cout << "mock driver run" << std::endl;
-        driver->getProcess().process(samplesIn, samplesIn, midiIn, midiIn);
+
+        std::vector<MIDIEvent> midiIn;
+        std::vector<MIDIEvent> midiOut;
+        if (driver->getMidiDriver()) {
+            midiIn = driver->getMidiDriver()->readMidiEvents();
+        }
+
+        driver->getProcess().process(samplesIn, samplesIn, midiIn, midiOut);
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }

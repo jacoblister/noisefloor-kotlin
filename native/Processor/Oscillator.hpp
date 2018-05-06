@@ -2,7 +2,7 @@
 #include <math.h>
 
 class Oscillator {
-private:
+public:
     float waveTable[48000];
     float currentSample;
     float freq = 220;

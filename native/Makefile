@@ -10,7 +10,7 @@ ifeq ($(OS),Windows_NT)
     CFLAGS=/EHsc
     O=obj
 
-    LINKEXTRA=User32.lib Advapi32.lib Ole32.lib
+    LINKEXTRA=User32.lib Advapi32.lib Ole32.lib Winmm.lib
 else
     # Linux
     TARGET_PLATFORM=LINUX

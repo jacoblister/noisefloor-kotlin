@@ -71,7 +71,7 @@ result<bool> DriverAudioASIO::start() {
         return result<bool>(false, "ASIO init failed");
     }
 
-//    ASIOControlPanel();
+    ASIOControlPanel();
 
     // Get driver info
     if (ASIOGetChannels(&this->inputChannels, &this->outputChannels) != ASE_OK) {
