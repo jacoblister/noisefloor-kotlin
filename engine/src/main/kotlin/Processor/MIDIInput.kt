@@ -10,7 +10,7 @@ class MIDIInput : Processor(
     val channels   = ProcessorParameter(value = 4, min = 0f, max = 32f)
 
     private var channelNotes: Array<Int>   = arrayOf()
-    private var channelData: Array<Array<Float>> = arrayOf()
+    private var channelData:  Array<Array<Float>> = arrayOf()
     private var noteChannels: HashMap<Int, Int> = hashMapOf()
     private var nextChannel:  Int = 0
     private var triggerClear: Int = 0
