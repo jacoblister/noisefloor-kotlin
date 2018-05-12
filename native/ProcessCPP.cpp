@@ -8,12 +8,15 @@ result<bool> ProcessCPP::init(void) {
 
 result<bool> ProcessCPP::start(int samplingRate, int samplesPerFrame) {
     this->samplesPerFrame = samplesPerFrame;
+    this->midiInput.start(samplingRate);
     this->oscillator.start(samplingRate);
 
     return true;
 }
 
 result<bool> ProcessCPP::process(std::vector<float *> samplesIn, std::vector<float *> samplesOut, std::vector<MIDIEvent> midiIn, std::vector<MIDIEvent> midiOut) {
+    this->midiInput.processMidi(midiIn);
+
     for (int i = 0; i < midiIn.size(); i++) {
         struct MIDIEvent& midiEvent = midiIn.at(i);
         int note = midiEvent.data[1];
@@ -24,6 +27,8 @@ result<bool> ProcessCPP::process(std::vector<float *> samplesIn, std::vector<flo
 //        printf("note = %d, freq = %f\n", note, freq);
     }
     for (int i = 0; i < this->samplesPerFrame; i++) {
+        std::vector<std::array<float, 3>> freqs = this->midiInput.process();
+
         float sample = this->oscillator.process();
         samplesOut[0][i] = sample;
         samplesOut[1][i] = sample;

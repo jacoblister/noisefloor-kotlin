@@ -96,7 +96,7 @@ NoiseFloor.$O: NoiseFloor.cpp
 
 ProcessMock.$O: ProcessMock.cpp ProcessMock.hpp
 ProcessV8Engine.$O: ProcessV8Engine.cpp ProcessV8Engine.hpp
-ProcessCPP.$O: ProcessCPP.cpp ProcessCPP.hpp Processor/Oscillator.hpp
+ProcessCPP.$O: ProcessCPP.cpp ProcessCPP.hpp Processor/MIDIInput.hpp Processor/Oscillator.hpp
 
 DriverAudioMock.$O: DriverAudioMock.cpp DriverAudioMock.hpp
 DriverAudioASIO.$O: DriverAudioASIO.cpp DriverAudioASIO.hpp

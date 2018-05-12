@@ -1,14 +1,9 @@
 #pragma once
 #include "include/result.hpp"
+#include "include/midiEvent.hpp"
 
 #include <string>
 #include <vector>
-
-struct MIDIEvent {
-    int time;
-    int length;
-    char *data;
-};
 
 class Process {
   public:
