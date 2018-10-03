@@ -1,13 +1,16 @@
+#pragma once
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 class Oscillator {
-public:
+private:
     float waveTable[48000];
     float currentSample;
-    float freq = 220;
     float sampleRate;
 public:
+    float freq = 220;
+
     inline void start(int sampleRate) {
         this->currentSample = 0;
         this->sampleRate = sampleRate;

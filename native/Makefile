@@ -16,7 +16,7 @@ else
     TARGET_PLATFORM=LINUX
     TARGET_AUDIO=AUDIO_JACK
     TARGET_MIDI=MIDI_MOCK
-    TARGET_PROCESS=PROCESS_V8
+    TARGET_PROCESS=PROCESS_CPP
     TARGET_CLIENT=CLIENT_MOCK
 
     CPP=g++
@@ -96,7 +96,7 @@ NoiseFloor.$O: NoiseFloor.cpp
 
 ProcessMock.$O: ProcessMock.cpp ProcessMock.hpp
 ProcessV8Engine.$O: ProcessV8Engine.cpp ProcessV8Engine.hpp
-ProcessCPP.$O: ProcessCPP.cpp ProcessCPP.hpp Processor/MIDIInput.hpp Processor/Oscillator.hpp
+ProcessCPP.$O: ProcessCPP.cpp ProcessCPP.hpp Processor/MIDIInput.hpp Processor/Oscillator.hpp Test/Patch.hpp Test/MultiPatch.hpp
 
 DriverAudioMock.$O: DriverAudioMock.cpp DriverAudioMock.hpp
 DriverAudioASIO.$O: DriverAudioASIO.cpp DriverAudioASIO.hpp
