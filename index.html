@@ -16,13 +16,22 @@
 
 <svg id="keyboard" width="1000" height="200"></svg>
 
+<!--<script type="text/javascript">-->
+    <!--window.module = window.module || {};-->
+    <!--window.require = window.require || {};-->
+<!--</script>-->
 <script type="text/javascript" src="build/libs/kotlin.js"></script>
+<script type="text/javascript" src="build/libs/common.js"></script>
 <script type="text/javascript" src="build/libs/engine.js"></script>
-<script type="text/javascript" src="build/libs/noisefloor.js"></script>
+<!--<script type="text/javascript" src="build/libs/kotlin-extensions.js"></script>-->
+<!--<script type="text/javascript" src="build/libs/kotlinx-html-js.js"></script>-->
+<!--<script type="text/javascript" src="build/libs/kotlin-react.js"></script>-->
+<!--<script type="text/javascript" src="build/libs/kotlin-react-dom.js"></script>-->
+<script type="text/javascript" src="build/libs/frontend.js"></script>
 
 <script type="text/javascript">
-    var noiseweb    = noisefloor.org.noisefloor.web
-    var noiseengine = engine.org.noisefloor.engine
+    var noiseweb    = frontend.noisefloor.frontend;
+    var noiseengine = engine.noisefloor.engine
 
     var frameLength  = 512
     var sampleBuffer = [

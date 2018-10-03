@@ -1,5 +1,6 @@
 package org.noisefloor.engine
 
+import noisefloor.engine.processor.Gain
 import kotlin.test.*
 
 class GainTest {

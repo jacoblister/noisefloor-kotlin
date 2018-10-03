@@ -1,2 +1,4 @@
 rootProject.name = 'noisefloor'
+include 'common'
 include 'engine'
+include 'frontend'

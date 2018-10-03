@@ -1,0 +1,18 @@
+apply plugin: 'kotlin2js'
+
+repositories {
+    jcenter()
+    maven { url 'https://kotlin.bintray.com/kotlin-js-wrappers' }
+}
+
+ext {
+    kotlinx_html_version = '0.6.6'
+    kotlin_react_version = '16.0.0-pre.8-kotlin-1.1.51'
+}
+
+dependencies {
+    implementation(project(":common"))
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js"
+//    compile "org.jetbrains:kotlin-react-dom:$kotlin_react_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test-js"
+}

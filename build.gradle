@@ -13,10 +13,12 @@ apply plugin: 'kotlin2js'
 
 repositories {
     jcenter()
+    maven { url 'https://kotlin.bintray.com/kotlin-js-wrappers' }
 }
 
 dependencies {
     compile project ('engine')
+    compile project ('frontend')
     compile "org.jetbrains.kotlin:kotlin-stdlib-js"
     testCompile "org.jetbrains.kotlin:kotlin-test-js"
 }
