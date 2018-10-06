@@ -1,6 +1,8 @@
 package noisefloor.frontend
 //import org.noisefloor.engine.Gain
 import noisefloor.common.data.MIDIEvent
+//import kotlinx.html
+import kotlinx.html.*
 
 import org.w3c.dom.svg.*
 import kotlin.browser.document
@@ -12,8 +14,13 @@ fun main(args : Array<String>) {
 //    println("Noisefloor web gain=${gain.master.value}")
 
     val svg = document.getElementById("keyboard") as SVGSVGElement
-    val keyboard = Keyboard()
-    svg.appendChild(keyboard.render())
+    document.getElementById("keyboard")!!.append {
+        div {
+            +"added it"
+        }
+    }
+//    val keyboard = Keyboard()
+//    svg.appendChild(keyboard.render())
 
     mainKeyboard = keyboard
 }

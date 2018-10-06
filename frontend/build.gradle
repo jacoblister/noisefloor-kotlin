@@ -13,6 +13,8 @@ ext {
 dependencies {
     implementation(project(":common"))
     compile "org.jetbrains.kotlin:kotlin-stdlib-js"
+    compile "org.jetbrains.kotlinx:kotlinx-html-js:0.6.11"
 //    compile "org.jetbrains:kotlin-react-dom:$kotlin_react_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-js"
+
 }
