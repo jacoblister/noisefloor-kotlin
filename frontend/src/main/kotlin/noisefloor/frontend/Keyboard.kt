@@ -132,11 +132,11 @@ class Keyboard {
     fun render(): Node {
         val group = svgElement("g")
 
-        for (octave in 0 until 3) {
-            renderOctave(group, 48 + octave * 12, (40 * 7 * octave) + 1)
-        }
-
-        keyboardInput()
+//        for (octave in 0 until 3) {
+//            renderOctave(group, 48 + octave * 12, (40 * 7 * octave) + 1)
+//        }
+//
+//        keyboardInput()
 
         return group
     }

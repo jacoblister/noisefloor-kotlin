@@ -1,5 +1,4 @@
 apply plugin: 'kotlin2js'
-//compileKotlin2Js.kotlinOptions.moduleKind = "commonjs"
 
 repositories {
     jcenter()
@@ -7,5 +6,8 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js"
-    testCompile "org.jetbrains.kotlin:kotlin-test-js"
 }
+
+//applyKotlinJS()
+//
+//configurePublishingWithNPM(kotlinext_version)

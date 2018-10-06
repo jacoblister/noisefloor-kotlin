@@ -1,0 +1,9 @@
+apply plugin: 'kotlin2js'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile project(':kotlin-extensions')
+}

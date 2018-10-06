@@ -1,0 +1,10 @@
+apply plugin: 'kotlin2js'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlinx:kotlinx-html-js:0.6.11"
+    compile project(':kotlin-react')
+}

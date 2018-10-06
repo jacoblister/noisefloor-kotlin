@@ -10,6 +10,7 @@ buildscript {
 }
 
 apply plugin: 'kotlin2js'
+compileKotlin2Js.kotlinOptions.moduleKind = "commonjs"
 
 repositories {
     jcenter()
@@ -19,6 +20,8 @@ repositories {
 dependencies {
     compile project ('engine')
     compile project ('frontend')
+    compile project ('kotlin-extensions')
+    compile project ('kotlin-react')
     compile "org.jetbrains.kotlin:kotlin-stdlib-js"
     testCompile "org.jetbrains.kotlin:kotlin-test-js"
 }
