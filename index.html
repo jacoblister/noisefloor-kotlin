@@ -30,11 +30,11 @@
 <script type="text/javascript" src="build/libs/frontend.js"></script>
 
 <script type="text/javascript">
-    var noiseweb    = frontend.noisefloor.frontend;
-    var noiseengine = engine.noisefloor.engine
+    var frontend = frontend.noisefloor.frontend;
+    var engine   = engine.noisefloor.engine
 
-    engineAPI = noiseweb.getEngineAPI();
-    noiseweb.setEngineAPI(engineAPI);
+    engineAPI = engine.getEngineAPI();
+    frontend.setEngineAPI(engineAPI);
 
     var frameLength  = 512
     var sampleBuffer = [
@@ -43,14 +43,14 @@
         ];
     var audioContext = new AudioContext();
 
-    noiseengine.start(audioContext.sampleRate)
+    engine.start(audioContext.sampleRate)
 
     var node = audioContext.createScriptProcessor(frameLength, 2, 2);
     node.onaudioprocess = function (event) {
         var output     = event.outputBuffer.getChannelData(0);
-        var midiEvents = noiseweb.getMIDIEvents()
+        var midiEvents = frontend.getMIDIEvents();
 
-        noiseengine.processLogPerformance(sampleBuffer, sampleBuffer, midiEvents, []);
+        engine.processLogPerformance(sampleBuffer, sampleBuffer, midiEvents, []);
         event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
         event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
     }

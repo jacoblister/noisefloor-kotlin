@@ -19,10 +19,12 @@ fun main(args : Array<String>) {
     mainKeyboard = keyboard
 }
 
+@JsName(name = "setEngineAPI")
 fun setEngineAPI(engineAPI: EngineAPI) {
     println("engineAPI graph: ${engineAPI.graph()}")
 }
 
+@JsName(name = "getMIDIEvents")
 fun getMIDIEvents(): Array<MIDIEvent> {
     return mainKeyboard!!.getNoteEvents()
 }
