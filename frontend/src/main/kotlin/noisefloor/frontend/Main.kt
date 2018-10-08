@@ -1,5 +1,6 @@
 package noisefloor.frontend
 //import org.noisefloor.engine.Gain
+import noisefloor.common.api.EngineAPI
 import noisefloor.common.data.MIDIEvent
 //import kotlinx.html
 import kotlinx.html.*
@@ -25,6 +26,12 @@ fun main(args : Array<String>) {
     mainKeyboard = keyboard
 }
 
+@JsName(name = "setEngineAPI")
+fun setEngineAPI(engineAPI: EngineAPI) {
+    println("engineAPI graph: ${engineAPI.graph()}")
+}
+
+@JsName(name = "getMIDIEvents")
 fun getMIDIEvents(): Array<MIDIEvent> {
     return mainKeyboard!!.getNoteEvents()
 }

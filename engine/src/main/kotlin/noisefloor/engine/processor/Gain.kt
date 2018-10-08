@@ -1,6 +1,6 @@
 package noisefloor.engine.processor
 
-import noisefloor.engine.common.ProcessorParameter
+import noisefloor.common.ProcessorParameter
 import noisefloor.engine.Processor
 
 class Gain : Processor(

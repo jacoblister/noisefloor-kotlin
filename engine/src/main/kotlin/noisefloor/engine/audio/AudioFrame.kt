@@ -1,4 +1,4 @@
-package noisefloor.engine.common
+package noisefloor.engine.audio
 
 import noisefloor.common.data.MIDIEvent
 

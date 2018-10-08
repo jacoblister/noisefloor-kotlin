@@ -1,6 +1,8 @@
 package noisefloor.engine
 
+import noisefloor.common.api.EngineAPI
 import noisefloor.common.data.MIDIEvent
+import noisefloor.engine.api.EngineAPIEmedded
 import noisefloor.engine.processor.Gain
 import noisefloor.engine.processor.MIDIInput
 import noisefloor.engine.processor.Oscillator
@@ -41,6 +43,11 @@ fun start(sampleRate: Int) {
 }
 
 typealias AudioSamples = Array<Float>
+
+@JsName(name = "getEngineAPI")
+fun getEngineAPI() : EngineAPI {
+    return EngineAPIEmedded()
+}
 
 @JsName(name = "speedtest")
 fun speedtest() {

@@ -1,7 +1,7 @@
 package noisefloor.engine.processor
 
 import noisefloor.common.data.MIDIEvent
-import noisefloor.engine.common.ProcessorParameter
+import noisefloor.common.ProcessorParameter
 import noisefloor.engine.Processor
 import kotlin.math.pow
 
