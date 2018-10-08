@@ -1,4 +1,4 @@
-package noisefloor.engine.common
+package noisefloor.common
 
 class ProcessorParameter<T>(
         var name:  String? = null,

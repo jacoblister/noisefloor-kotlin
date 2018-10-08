@@ -1,5 +1,6 @@
 package noisefloor.frontend
 //import org.noisefloor.engine.Gain
+import noisefloor.common.api.EngineAPI
 import noisefloor.common.data.MIDIEvent
 
 import org.w3c.dom.svg.*
@@ -16,6 +17,10 @@ fun main(args : Array<String>) {
     svg.appendChild(keyboard.render())
 
     mainKeyboard = keyboard
+}
+
+fun setEngineAPI(engineAPI: EngineAPI) {
+    println("engineAPI graph: ${engineAPI.graph()}")
 }
 
 fun getMIDIEvents(): Array<MIDIEvent> {

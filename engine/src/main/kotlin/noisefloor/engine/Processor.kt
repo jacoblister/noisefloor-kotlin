@@ -1,6 +1,6 @@
 package noisefloor.engine
 
-import noisefloor.engine.common.ProcessorParameter
+import noisefloor.common.ProcessorParameter
 
 abstract class Processor(var name: String = "processor", val inputs: Array<String> = emptyArray(), val outputs: Array<String> = emptyArray()) {
     @JsName(name = "start")

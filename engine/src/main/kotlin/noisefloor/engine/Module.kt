@@ -1,6 +1,6 @@
 package noisefloor.engine
 
-import noisefloor.engine.common.AudioFrame
+import noisefloor.engine.audio.AudioFrame
 
 abstract class Module {
     var name: String = ""

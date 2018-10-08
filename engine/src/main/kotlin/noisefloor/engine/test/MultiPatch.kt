@@ -1,6 +1,6 @@
 package noisefloor.engine.test
 
-import noisefloor.engine.common.ProcessorParameter
+import noisefloor.common.ProcessorParameter
 import noisefloor.engine.processor.Oscillator
 import noisefloor.engine.Processor
 

@@ -1,6 +1,6 @@
 package noisefloor.engine.processor
 
-import noisefloor.engine.common.ProcessorParameter
+import noisefloor.common.ProcessorParameter
 import noisefloor.engine.Processor
 import kotlin.math.PI
 import kotlin.math.sin

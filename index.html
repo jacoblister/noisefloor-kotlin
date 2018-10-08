@@ -33,6 +33,9 @@
     var noiseweb    = frontend.noisefloor.frontend;
     var noiseengine = engine.noisefloor.engine
 
+    engineAPI = noiseweb.getEngineAPI();
+    noiseweb.setEngineAPI(engineAPI);
+
     var frameLength  = 512
     var sampleBuffer = [
         new Float32Array(Array(frameLength).fill(0)),
